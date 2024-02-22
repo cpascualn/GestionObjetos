@@ -90,6 +90,7 @@ class RestaurantController {
             this[VIEW].showCategories(this[MODEL].categories);
             this[VIEW].showDishes(this.RandDishes());
             this[VIEW].loadRestaurants(this[MODEL].restaurants);
+            this[VIEW].showSelectOptions(this[MODEL].categories, this[MODEL].allergens);
         } catch (error) {
 
         }
@@ -179,5 +180,7 @@ class RestaurantController {
     handleCloseWindows = () => {
         this[VIEW].closeWindows();
     }
+
+
 }
 export default RestaurantController;

@@ -37,6 +37,8 @@ const historyActions = {
     },
     closeWindows: () => {
         RestaurantApp.handleCloseWindows();
+    }, chargeFormSelects: () => {
+
     },
 };
 

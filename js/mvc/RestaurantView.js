@@ -8,6 +8,7 @@ class RestaurantView {
 		this.menus = document.getElementById('menus');
 		this.headText = document.getElementById("head_text");
 		this.restaurants = document.getElementById("restaurants");
+		this.dishsForm = document.getElementById("dishForm");
 		this.dishWindows = null;
 	}
 
@@ -190,7 +191,7 @@ class RestaurantView {
 	}
 
 	bindCloseWindows(handler) {
-		
+
 		const bClose = document.getElementById('windowsCloser');
 		bClose.addEventListener('click', (event) => {
 			this[EXCECUTE_HANDLER](
@@ -408,6 +409,31 @@ class RestaurantView {
 	closeWindows() {
 		if (this.dishWindows !== null) {
 			this.dishWindows.window.close();
+		}
+	}
+
+	showSelectOptions(categories, allergens) {
+
+		const categorias = this.dishsForm.querySelector('#categorias');
+		const alergenos = this.dishsForm.querySelector('#alergenos');
+
+		for (const category of categories) {
+
+			var nuevaOpcion = document.createElement("option");
+
+			nuevaOpcion.value = category.name;
+			nuevaOpcion.textContent = category.name;
+
+			categorias.appendChild(nuevaOpcion);
+		}
+
+		for (const allergen of allergens) {
+			var nuevaOpcion = document.createElement("option");
+
+			nuevaOpcion.value = allergen.name;
+			nuevaOpcion.textContent = allergen.name;
+
+			alergenos.appendChild(nuevaOpcion);
 		}
 	}
 
