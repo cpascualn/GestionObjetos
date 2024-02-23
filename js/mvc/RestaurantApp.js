@@ -37,9 +37,7 @@ const historyActions = {
     },
     closeWindows: () => {
         RestaurantApp.handleCloseWindows();
-    }, chargeFormSelects: () => {
-
-    },
+    }
 };
 
 window.addEventListener('popstate', (event) => {

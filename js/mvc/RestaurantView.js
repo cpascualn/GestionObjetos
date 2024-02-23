@@ -8,8 +8,8 @@ class RestaurantView {
 		this.menus = document.getElementById('menus');
 		this.headText = document.getElementById("head_text");
 		this.restaurants = document.getElementById("restaurants");
+		this.dishWindows = Array();
 		this.dishsForm = document.getElementById("dishForm");
-		this.dishWindows = null;
 	}
 
 	[EXCECUTE_HANDLER](handler, handlerArguments, scrollElement, data, url,
@@ -160,11 +160,15 @@ class RestaurantView {
 		for (const boton of botones) {
 			boton.addEventListener('click', (event) => {
 				let dish = event.target.dataset.dname;
-				if (!this.dishWindows || this.dishWindows.closed) {
-					this.dishWindows = window.open('dish.html', 'DishWindow',
-						'width=800, height=600, top=250, left=250, titlebar=yes, toolbar=no,menubar=no, location=no');
 
-					this.dishWindows.addEventListener('DOMContentLoaded', () => {
+				// si la ventana no existe , se puede añadir
+				if (this.dishWindows.find(window => window.name === (dish.replace(/\s/g, '') + "DishWindow")) === undefined) {
+					// crear nueva ventana y recogerla en el array de ventanas
+					let newWin = window.open('dish.html', dish + 'DishWindow',
+						'width=800, height=600, top=250, left=250, titlebar=yes, toolbar=no,menubar=no, location=no');
+					this.dishWindows.push(newWin);
+
+					this.dishWindows[this.dishWindows.length - 1].addEventListener('DOMContentLoaded', () => {
 						this[EXCECUTE_HANDLER](
 							handler,
 							[dish],
@@ -175,18 +179,9 @@ class RestaurantView {
 						);
 
 					});
-				} else {
-					this[EXCECUTE_HANDLER](
-						handler,
-						[dish],
-						'#listado',
-						{ action: 'showDishInNewWindow', dish },
-						'#' + dish,
-						event,
-					);
-					this.dishWindows.focus();
 				}
 			});
+
 		}
 	}
 
@@ -294,17 +289,18 @@ class RestaurantView {
 
 
 	showDishInNewWindow(dish, message) {
-
-		const platosDiv = this.dishWindows.document.getElementById('plato');
-		const header = this.dishWindows.document.getElementById('h-title');
+		// encontrar la ventana llamada dish + 'DishWindow'
+		console.log(this.dishWindows);
+		let window = this.dishWindows.find(window => window.name === (dish.name.replace(/\s/g, '') + "DishWindow"));
+		let platosDiv = window.document.getElementById('plato');
+		let header = window.document.getElementById('h-title');
 		if (platosDiv !== null) {
 			platosDiv.replaceChildren();
 		}
 
-
 		if (dish !== null) {
 			header.innerHTML = dish.name;
-			this.dishWindows.document.title = `${dish.name}`;
+			window.document.title = `${dish.name}`;
 			platosDiv.insertAdjacentHTML('beforeend', `
 			<img src="${dish.image}" alt>
 			<h5>${dish.description}</h5>
@@ -317,7 +313,8 @@ class RestaurantView {
 			}
 
 		}
-		this.dishWindows.document.body.scrollIntoView();
+		window.document.body.scrollIntoView();
+
 	}
 
 	showAllergens(allergens) { // mostrar el menu de alergenos
@@ -407,9 +404,12 @@ class RestaurantView {
 	}
 
 	closeWindows() {
-		if (this.dishWindows !== null) {
-			this.dishWindows.window.close();
+		for (const window of this.dishWindows) {
+			if (window !== null) {
+				window.close();
+			}
 		}
+
 	}
 
 	showSelectOptions(categories, allergens) {
