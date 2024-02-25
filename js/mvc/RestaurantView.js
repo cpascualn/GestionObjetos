@@ -242,9 +242,9 @@ class RestaurantView {
 
 		// si llegan 3 platos, cambiar el css para que queden centrados
 		if (dishes.length <= 3) {
-			this.list.classList.add('nav');
+			this.list.classList.add('listadoThree');
 		} else
-			this.list.classList.remove('nav');
+			this.list.classList.remove('listadoThree');
 
 
 		for (const dish of dishes) {

@@ -142,7 +142,6 @@ ul.slider li:target {
     text-align: center;
 }
 
-
 .listado {
     width: 80%;
     height: auto;
@@ -152,7 +151,18 @@ ul.slider li:target {
     row-gap: 15px;
     grid-template-columns: repeat(4, 20%);
     justify-content: center;
-    justify-items: center;
+    margin-bottom: 50px;
+}
+
+.listadoThree {
+    width: 80%;
+    height: auto;
+    padding: 20px;
+    display: grid;
+    column-gap: 5%;
+    row-gap: 15px;
+    grid-template-columns: repeat(3, 20%);
+    justify-content: center;
     margin-bottom: 50px;
 }
 
