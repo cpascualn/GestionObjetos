@@ -36,7 +36,7 @@ body {
 .header__nav a {
     text-decoration: none;
     color: #E6F2E8;
-    font-size: 25px;
+    font-size: 20px;
 }
 
 .header__title {
@@ -213,10 +213,12 @@ ul.slider li:target {
 .form-group {
     margin-bottom: 10px;
 }
+
 .form-group label {
     display: block;
     font-weight: bold;
 }
+
 .form-group input[type="text"],
 .form-group textarea,
 .form-group select {
