@@ -36,6 +36,24 @@
                 </li>
                 <li><a id="windowsCloser" href="#">Cerrar todas las
                         ventanas</a></li>
+
+                <li>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Gestion
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark" id="gestion">
+                            <!-- con js añadir la clase active -->
+                            <li><a class="dropdown-item" href="#">Añadir Plato</a></li>
+                            <li><a class="dropdown-item" href="#">Borrar Plato</a></li>
+                            <li><a class="dropdown-item" href="#">Gestionar Platos</a></li>
+                            <li><a class="dropdown-item" href="#">Gestionar Categorias</a></li>
+                            <li><a class="dropdown-item" href="#">Añadir Restaurante</a></li>
+                            <li><a class="dropdown-item" href="#">Modificar Categorias</a></li>
+                        </ul>
+                    </div>
+                </li>
             </ul>
         </nav>
     </header>
@@ -58,6 +76,7 @@
         </div>
 
         <div class="form__wrapper">
+            <h2>AÑADIR PLATO</h2>
             <form action="" method="post" class="dishForm" id="dishForm" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="nombre">Nombre</label><input type="text" name="nombre">
@@ -68,7 +87,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="ingredientes">Ingredientes</label><input type="text" name="ingredientes" placeholder="separe los ingredientes entre comas , ">
+                    <label for="ingredientes">Ingredientes</label><input type="text" name="ingredientes"
+                        placeholder="separe los ingredientes entre comas , ">
                 </div>
 
 
@@ -79,7 +99,7 @@
                 <div class="form-group">
                     <label for="categorias">Categorias</label>
                     <select name="categorias" id="categorias" size="4" multiple>
-                      
+
                     </select>
                 </div>
 
