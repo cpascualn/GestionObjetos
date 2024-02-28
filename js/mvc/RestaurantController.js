@@ -15,6 +15,7 @@ class RestaurantController {
             this[VIEW].bindAllerList(this.handleAllergenList);
             this[VIEW].bindMenuList(this.handleMenuList);
             this[VIEW].bindRestaurant(this.handleRestaurants);
+            this[VIEW].bindManagement(this.handleShowForm);
             this[VIEW].bindCloseWindows(this.handleCloseWindows);
         } catch (error) {
             console.log(error);
@@ -89,7 +90,6 @@ class RestaurantController {
             this[VIEW].showCategories(this[MODEL].categories);
             this[VIEW].showDishes(this.RandDishes());
             this[VIEW].loadRestaurants(this[MODEL].restaurants);
-            this[VIEW].showSelectOptions(this[MODEL].categories, this[MODEL].allergens);
         } catch (error) {
 
         }
@@ -174,6 +174,23 @@ class RestaurantController {
         } catch (error) {
             this[VIEW].showDishInNewWindow(null, 'No existe este producto en la página.');
         }
+    }
+
+    // recibe el nombre del tipo de formulario a mostrar
+    handleShowForm = (gestion) => {
+        const gestiones = [
+            { nombre: "addDish", funcion: () => this[VIEW].addDishForm(this[MODEL].categories, this[MODEL].allergens) },
+            { nombre: "removeDish", funcion: () => this[VIEW].removeDishForm(this[MODEL].dishes) },
+            { nombre: "manageMenu", funcion: () => this[VIEW].manageMenuForm(this[MODEL].menus) },
+            { nombre: "manageCat", funcion: () => this[VIEW].manageCatForm() },
+            { nombre: "addRest", funcion: () => this[VIEW].addRestForm() },
+            { nombre: "modifyCat", funcion: () => this[VIEW].modifyCatForm() }
+        ];
+
+        let funcion = gestiones.find(ges => ges.nombre === gestion).funcion;
+        // recoger la funcion y , si existe , llamarla
+        funcion ? funcion() : console.log("no existe");
+
     }
 
     handleCloseWindows = () => {

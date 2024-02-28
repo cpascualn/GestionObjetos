@@ -209,13 +209,11 @@ ul.slider li:target {
 .form__wrapper {
     margin: 40px 0;
     width: 50%;
-    border: 1px solid black;
     padding: 10px;
 }
 
 .dishForm {
     display: grid;
-
     grid-gap: 10px;
     padding: 20px;
 }

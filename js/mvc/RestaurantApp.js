@@ -29,6 +29,9 @@ const historyActions = {
     showRestaurant: (state) => {
         RestaurantApp.handleRestaurants(state.restaurant);
     },
+    showForm: (state) => {
+        RestaurantApp.handleShowForm(state.gestion);
+    },
     showDish: (state) => {
         RestaurantApp.handleShowDish(state.target);
     },

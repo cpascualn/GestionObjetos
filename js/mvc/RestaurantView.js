@@ -9,7 +9,7 @@ class RestaurantView {
 		this.headText = document.getElementById("head_text");
 		this.restaurants = document.getElementById("restaurants");
 		this.dishWindows = Array();
-		this.dishsForm = document.getElementById("dishForm");
+		this.dishsForm = document.getElementById("Form");
 	}
 
 	[EXCECUTE_HANDLER](handler, handlerArguments, scrollElement, data, url,
@@ -200,6 +200,25 @@ class RestaurantView {
 		});
 	}
 
+	bindManagement(handler) {
+		let gestiones = document.getElementById("gestiones");
+		const links = gestiones.querySelectorAll('li');
+		for (const link of links) {
+			let enlace = link.querySelector("a");
+			const gestion = enlace.dataset.gestion;
+			enlace.addEventListener('click', (event) => {
+				this[EXCECUTE_HANDLER](
+					handler,
+					[gestion],
+					'.form__wrapper',
+					{ action: 'showForm', gestion },
+					'#' + gestion,
+					event,
+				);
+			});
+		}
+	}
+
 
 	modifyBreadcrumb(category) { // metodo para modificar las migas de pan, si recibe null se borra y vuelve al inicio, si no se añade la nueva ubicacion
 		let bc = document.getElementById('breadcrumb');
@@ -250,7 +269,6 @@ class RestaurantView {
 		for (const dish of dishes) {
 			const container = document.createElement('div');
 			container.classList.add('card');
-			container.style.width = '18rem';
 
 			let name = dish.name.replace(/\s/g, '');
 			// mostrar un boton de boostrap que abre un modal con la ficha del plato
@@ -411,6 +429,300 @@ class RestaurantView {
 		}
 
 	}
+
+
+	addDishForm(categories, allergens) {
+		this.dishsForm.replaceChildren();
+		this.headText.innerHTML = 'AÑADIR PLATO';
+		// ver si es mejor ocultarlos
+		this.categories.innerHTML = '';
+		this.list.innerHTML = '';
+
+		this.dishsForm.insertAdjacentHTML('beforeend', `
+		<h2>AÑADIR PLATO</h2>
+		<div class="form-group">
+			<label for="nombre">Nombre</label><input type="text"
+				name="nombre">
+		</div>
+
+		<div class="form-group">
+			<label for="descripcion">Descripcion</label><input
+				type="text" name="descripcion">
+		</div>
+
+		<div class="form-group">
+			<label for="ingredientes">Ingredientes</label><input
+				type="text" name="ingredientes"
+				placeholder="separe los ingredientes entre comas , ">
+		</div>
+
+		<div class="form-group">
+
+			<label for="imagen">Imagen</label><input type="file"
+				name="imagen" accept="image/*">
+		</div>
+		<div class="form-group">
+			<label for="categorias">Categorias</label>
+			<select name="categorias" id="categorias" size="4"
+				multiple>
+
+			</select>
+		</div>
+
+		<div class="form-group">
+			<label for="alergenos">Alergenos</label>
+			<select name="alergenos" id="alergenos" size="4"
+				multiple>
+
+			</select>
+		</div>
+
+		<div class="form-group">
+			<input type="button" value="enviar">
+		</div>
+		`);
+
+		// añadir add event listener al button el cual hacer [MODEL].createdish
+		this.showSelectOptions(categories, allergens);
+	}
+
+	removeDishForm(dishes) {
+		this.dishsForm.replaceChildren();
+		this.headText.innerHTML = 'BORRAR PLATO';
+		// ver si es mejor ocultarlos
+		this.categories.innerHTML = '';
+		this.list.innerHTML = '';
+
+
+		this.dishsForm.insertAdjacentHTML('beforeend', `
+		<h2>BORRAR PLATO</h2>
+		<div class="form-group">
+			<label for="platos">PLATOS</label>
+			<select name="platos" id="remDishes" size="8"
+				multiple>
+
+			</select>
+		</div>
+
+		<div class="form-group">
+			<input type="button" value="enviar">
+		</div>
+		`);
+
+		let divPlatos = document.querySelector('#remDishes');
+		for (const dish of dishes) {
+			var nuevaOpcion = document.createElement("option");
+			nuevaOpcion.value = dish.dish.name;
+			nuevaOpcion.textContent = dish.dish.name;
+
+			divPlatos.appendChild(nuevaOpcion);
+		}
+
+	}
+
+	manageMenuForm(menus) {
+		// añadir en categories la opcion asignar y otra con opcion desasignar
+
+		this.dishsForm.replaceChildren();
+		this.headText.innerHTML = 'GESTION DE MENUS';
+		this.categories.innerHTML = '';
+		this.list.innerHTML = '';
+
+		this.dishsForm.insertAdjacentHTML('beforeend', `
+		<h2>GESTION DE MENUS</h2>
+
+		<div class="form-group">
+			<label for="menus">MENUS</label>
+			<select name="menus" id="menusSel" onchange="${this.mostrarMenuForm()}">
+
+			</select>
+		</div>
+
+		<div class="form-group">
+			<input type="button" value="Asignar">
+			<input type="button" value="Desasignar">
+		</div>
+		`);
+
+		let divMenus = document.querySelector('#menusSel');
+		for (const menu of menus) {
+			var nuevaOpcion = document.createElement("option");
+			nuevaOpcion.value = menu.menu.name;
+			nuevaOpcion.textContent = menu.menu.name;
+
+			divMenus.appendChild(nuevaOpcion);
+		}
+	}
+
+	mostrarMenuForm() { // mostrar los platos del menu
+		let select = document.getElementById("menusSel");
+
+		// Obtener el valor seleccionado
+		// let dishes = select.value;
+
+		// Hacer algo con el valor seleccionado
+		console.log(select);
+
+	}
+
+	manageCatForm() {
+		this.dishsForm.replaceChildren();
+		this.headText.innerHTML = 'AÑADIR PLATO';
+		// ver si es mejor ocultarlos
+		this.categories.innerHTML = '';
+		this.list.innerHTML = '';
+
+		this.dishsForm.insertAdjacentHTML('beforeend', `
+		<h2>AÑADIR PLATO</h2>
+		<div class="form-group">
+			<label for="nombre">Nombre</label><input type="text"
+				name="nombre">
+		</div>
+
+		<div class="form-group">
+			<label for="descripcion">Descripcion</label><input
+				type="text" name="descripcion">
+		</div>
+
+		<div class="form-group">
+			<label for="ingredientes">Ingredientes</label><input
+				type="text" name="ingredientes"
+				placeholder="separe los ingredientes entre comas , ">
+		</div>
+
+		<div class="form-group">
+
+			<label for="imagen">Imagen</label><input type="file"
+				name="imagen" accept="image/*">
+		</div>
+		<div class="form-group">
+			<label for="categorias">Categorias</label>
+			<select name="categorias" id="categorias" size="4"
+				multiple>
+
+			</select>
+		</div>
+
+		<div class="form-group">
+			<label for="alergenos">Alergenos</label>
+			<select name="alergenos" id="alergenos" size="4"
+				multiple>
+
+			</select>
+		</div>
+
+		<div class="form-group">
+			<input type="button" value="enviar">
+		</div>
+		`);
+	}
+
+	addRestForm() {
+		this.dishsForm.replaceChildren();
+		this.headText.innerHTML = 'AÑADIR PLATO';
+		// ver si es mejor ocultarlos
+		this.categories.innerHTML = '';
+		this.list.innerHTML = '';
+
+		this.dishsForm.insertAdjacentHTML('beforeend', `
+		<h2>AÑADIR PLATO</h2>
+		<div class="form-group">
+			<label for="nombre">Nombre</label><input type="text"
+				name="nombre">
+		</div>
+
+		<div class="form-group">
+			<label for="descripcion">Descripcion</label><input
+				type="text" name="descripcion">
+		</div>
+
+		<div class="form-group">
+			<label for="ingredientes">Ingredientes</label><input
+				type="text" name="ingredientes"
+				placeholder="separe los ingredientes entre comas , ">
+		</div>
+
+		<div class="form-group">
+
+			<label for="imagen">Imagen</label><input type="file"
+				name="imagen" accept="image/*">
+		</div>
+		<div class="form-group">
+			<label for="categorias">Categorias</label>
+			<select name="categorias" id="categorias" size="4"
+				multiple>
+
+			</select>
+		</div>
+
+		<div class="form-group">
+			<label for="alergenos">Alergenos</label>
+			<select name="alergenos" id="alergenos" size="4"
+				multiple>
+
+			</select>
+		</div>
+
+		<div class="form-group">
+			<input type="button" value="enviar">
+		</div>
+		`);
+	}
+
+	modifyCatForm() {
+		this.dishsForm.replaceChildren();
+		this.headText.innerHTML = 'AÑADIR PLATO';
+		// ver si es mejor ocultarlos
+		this.categories.innerHTML = '';
+		this.list.innerHTML = '';
+
+		this.dishsForm.insertAdjacentHTML('beforeend', `
+		<h2>AÑADIR PLATO</h2>
+		<div class="form-group">
+			<label for="nombre">Nombre</label><input type="text"
+				name="nombre">
+		</div>
+
+		<div class="form-group">
+			<label for="descripcion">Descripcion</label><input
+				type="text" name="descripcion">
+		</div>
+
+		<div class="form-group">
+			<label for="ingredientes">Ingredientes</label><input
+				type="text" name="ingredientes"
+				placeholder="separe los ingredientes entre comas , ">
+		</div>
+
+		<div class="form-group">
+
+			<label for="imagen">Imagen</label><input type="file"
+				name="imagen" accept="image/*">
+		</div>
+		<div class="form-group">
+			<label for="categorias">Categorias</label>
+			<select name="categorias" id="categorias" size="4"
+				multiple>
+
+			</select>
+		</div>
+
+		<div class="form-group">
+			<label for="alergenos">Alergenos</label>
+			<select name="alergenos" id="alergenos" size="4"
+				multiple>
+
+			</select>
+		</div>
+
+		<div class="form-group">
+			<input type="button" value="enviar">
+		</div>
+		`);
+	}
+
+
+
 
 	showSelectOptions(categories, allergens) {
 
