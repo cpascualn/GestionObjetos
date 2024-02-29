@@ -434,7 +434,7 @@ class RestaurantView {
 	addDishForm(categories, allergens) {
 		this.dishsForm.replaceChildren();
 		this.headText.innerHTML = 'AÑADIR PLATO';
-		// ver si es mejor ocultarlos
+
 		this.categories.innerHTML = '';
 		this.list.innerHTML = '';
 
@@ -478,18 +478,22 @@ class RestaurantView {
 		</div>
 
 		<div class="form-group">
-			<input type="button" value="enviar">
+			<input type="button" value="enviar" name="asignarDish" id="asignarDish">
 		</div>
 		`);
 
 		// añadir add event listener al button el cual hacer [MODEL].createdish
-		this.showSelectOptions(categories, allergens);
+		const categorias = this.dishsForm.querySelector('#categorias');
+		const alergenos = this.dishsForm.querySelector('#alergenos');
+
+		this.showSelectOptions(categorias, categories);
+		this.showSelectOptions(alergenos, allergens);
 	}
 
 	removeDishForm(dishes) {
 		this.dishsForm.replaceChildren();
 		this.headText.innerHTML = 'BORRAR PLATO';
-		// ver si es mejor ocultarlos
+
 		this.categories.innerHTML = '';
 		this.list.innerHTML = '';
 
@@ -505,22 +509,17 @@ class RestaurantView {
 		</div>
 
 		<div class="form-group">
-			<input type="button" value="enviar">
+			<input type="button" value="enviar" name="borrarDish" id="borrarDish">
 		</div>
 		`);
 
 		let divPlatos = document.querySelector('#remDishes');
-		for (const dish of dishes) {
-			var nuevaOpcion = document.createElement("option");
-			nuevaOpcion.value = dish.dish.name;
-			nuevaOpcion.textContent = dish.dish.name;
 
-			divPlatos.appendChild(nuevaOpcion);
-		}
+		this.showSelectOptions(divPlatos, [...dishes].map(dish => dish.dish));
 
 	}
 
-	manageMenuForm(menus) {
+	manageMenuForm(menus, AllDishes) {
 		// añadir en categories la opcion asignar y otra con opcion desasignar
 
 		this.dishsForm.replaceChildren();
@@ -533,47 +532,66 @@ class RestaurantView {
 
 		<div class="form-group">
 			<label for="menus">MENUS</label>
-			<select name="menus" id="menusSel" onchange="${this.mostrarMenuForm()}">
-
+			<select name="menus" id="menusSel">
+			<option value=""></option>
 			</select>
 		</div>
-
-		<div class="form-group">
-			<input type="button" value="Asignar">
-			<input type="button" value="Desasignar">
-		</div>
+		<fieldset><div id="MenuForm">  </div> </fieldset>
 		`);
 
 		let divMenus = document.querySelector('#menusSel');
-		for (const menu of menus) {
-			var nuevaOpcion = document.createElement("option");
-			nuevaOpcion.value = menu.menu.name;
-			nuevaOpcion.textContent = menu.menu.name;
+		this.showSelectOptions(divMenus, [...menus].map(menu => menu.menu));
+		divMenus.addEventListener('change', () => {
+			this.mostrarMenuForm(menus, AllDishes)
+		});
+	}
 
-			divMenus.appendChild(nuevaOpcion);
+	mostrarMenuForm(menus, AllDishes) { // mostrar los platos del menu
+		const select = document.getElementById("menusSel");
+		const menuForm = document.getElementById("MenuForm");
+		menuForm.replaceChildren();
+
+
+		let menu = [...menus].find(menu => menu.menu.name === select.value);
+		if (menu !== undefined) {
+			menuForm.insertAdjacentHTML('beforeend', `
+			<div class="form-group">
+				<label for="menusDishes">PLATOS DEL MENU</label>
+				<p>Seleccione SOLO 2 para intercambiar sus posiciones</p>
+				<select name="menusDishes" id="menusDishes" multiple size="3">
+
+				</select>
+				<input type="button" value="Desasignar" name="desasignarDishMenu" id="desasignarDishMenu">
+				<input type="button" value="Intercambiar Posiciones" name="intercambiarDishMenu" id="intercambiarDishMenu">
+			</div>
+
+			<div class="form-group">
+			<label for="dispoDishes">PLATOS DISPONIBLES PARA AÑADIR</label>
+			<select name="dispoDishes" id="dispoDishes" multiple size="6">
+			</select>
+			<input type="button" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
+			</div>
+			`);
+			// mostrar los platos de este menu
+			let menusDishes = menu.dishes.map(dish => dish.dish);
+			this.showSelectOptions(document.getElementById("menusDishes"), menusDishes);
+			// mostrar todos los platos de la aplicacion excepto los que ya estan añadidos
+			let dispoDishes = [...AllDishes].map(dish => dish.dish);
+			dispoDishes = dispoDishes.filter(dish => !menusDishes.includes(dish));
+			this.showSelectOptions(document.getElementById("dispoDishes"), dispoDishes);
 		}
 	}
 
-	mostrarMenuForm() { // mostrar los platos del menu
-		let select = document.getElementById("menusSel");
-
-		// Obtener el valor seleccionado
-		// let dishes = select.value;
-
-		// Hacer algo con el valor seleccionado
-		console.log(select);
-
-	}
-
-	manageCatForm() {
+	manageCatForm(categories) {
 		this.dishsForm.replaceChildren();
-		this.headText.innerHTML = 'AÑADIR PLATO';
-		// ver si es mejor ocultarlos
+		this.headText.innerHTML = 'GESTIONAR CATEGORIA';
+
 		this.categories.innerHTML = '';
 		this.list.innerHTML = '';
 
 		this.dishsForm.insertAdjacentHTML('beforeend', `
-		<h2>AÑADIR PLATO</h2>
+		<fieldset>
+		<h2>AÑADIR CATEGORIA</h2>
 		<div class="form-group">
 			<label for="nombre">Nombre</label><input type="text"
 				name="nombre">
@@ -585,47 +603,38 @@ class RestaurantView {
 		</div>
 
 		<div class="form-group">
-			<label for="ingredientes">Ingredientes</label><input
-				type="text" name="ingredientes"
-				placeholder="separe los ingredientes entre comas , ">
+			<input type="button" value="añadir" name="addCateg" id="addCateg">
 		</div>
-
+		</fieldset>
+		<fieldset>
+		<h2>BORRAR CATEGORIA</h2>
 		<div class="form-group">
-
-			<label for="imagen">Imagen</label><input type="file"
-				name="imagen" accept="image/*">
-		</div>
-		<div class="form-group">
-			<label for="categorias">Categorias</label>
-			<select name="categorias" id="categorias" size="4"
-				multiple>
+			<label for="categoriasDispo">CATEGORIAS DISPONIBLES</label>
+			<select name="categoriasDispo" id="categoriasDispo" multiple size="3">
 
 			</select>
+
 		</div>
 
 		<div class="form-group">
-			<label for="alergenos">Alergenos</label>
-			<select name="alergenos" id="alergenos" size="4"
-				multiple>
-
-			</select>
+			<input type="button" value="eliminar" name="remCateg" id="remCateg">
 		</div>
-
-		<div class="form-group">
-			<input type="button" value="enviar">
-		</div>
+		</fieldset>
 		`);
+
+
+		this.showSelectOptions(document.getElementById("categoriasDispo"), [...categories]);
 	}
 
 	addRestForm() {
 		this.dishsForm.replaceChildren();
-		this.headText.innerHTML = 'AÑADIR PLATO';
-		// ver si es mejor ocultarlos
+		this.headText.innerHTML = 'AÑADIR RESTAURANTE';
+
 		this.categories.innerHTML = '';
 		this.list.innerHTML = '';
 
 		this.dishsForm.insertAdjacentHTML('beforeend', `
-		<h2>AÑADIR PLATO</h2>
+		<h2>AÑADIR RESTAURANTE</h2>
 		<div class="form-group">
 			<label for="nombre">Nombre</label><input type="text"
 				name="nombre">
@@ -637,30 +646,12 @@ class RestaurantView {
 		</div>
 
 		<div class="form-group">
-			<label for="ingredientes">Ingredientes</label><input
-				type="text" name="ingredientes"
-				placeholder="separe los ingredientes entre comas , ">
-		</div>
+			<h3>Localizacion</h3>
+			<label for="latitud">latitud</label>
+			<input type="text" name="latitud">
 
-		<div class="form-group">
-
-			<label for="imagen">Imagen</label><input type="file"
-				name="imagen" accept="image/*">
-		</div>
-		<div class="form-group">
-			<label for="categorias">Categorias</label>
-			<select name="categorias" id="categorias" size="4"
-				multiple>
-
-			</select>
-		</div>
-
-		<div class="form-group">
-			<label for="alergenos">Alergenos</label>
-			<select name="alergenos" id="alergenos" size="4"
-				multiple>
-
-			</select>
+			<label for="longitud">longitud</label>
+			<input type="text" name="longitud">
 		</div>
 
 		<div class="form-group">
@@ -669,84 +660,79 @@ class RestaurantView {
 		`);
 	}
 
-	modifyCatForm() {
+	modifyCatForm(dishes, categories) {
 		this.dishsForm.replaceChildren();
-		this.headText.innerHTML = 'AÑADIR PLATO';
-		// ver si es mejor ocultarlos
+		this.headText.innerHTML = 'SELECCIONAR PLATO';
+
 		this.categories.innerHTML = '';
 		this.list.innerHTML = '';
 
+
 		this.dishsForm.insertAdjacentHTML('beforeend', `
-		<h2>AÑADIR PLATO</h2>
+		<h2>SELECCIONE UN PLATO</h2>
 		<div class="form-group">
-			<label for="nombre">Nombre</label><input type="text"
-				name="nombre">
-		</div>
-
-		<div class="form-group">
-			<label for="descripcion">Descripcion</label><input
-				type="text" name="descripcion">
-		</div>
-
-		<div class="form-group">
-			<label for="ingredientes">Ingredientes</label><input
-				type="text" name="ingredientes"
-				placeholder="separe los ingredientes entre comas , ">
-		</div>
-
-		<div class="form-group">
-
-			<label for="imagen">Imagen</label><input type="file"
-				name="imagen" accept="image/*">
-		</div>
-		<div class="form-group">
-			<label for="categorias">Categorias</label>
-			<select name="categorias" id="categorias" size="4"
-				multiple>
-
+			<label for="platos">PLATOS</label>
+			<select name="platos" id="selDishes">
+			<option value=""></option>
 			</select>
 		</div>
-
-		<div class="form-group">
-			<label for="alergenos">Alergenos</label>
-			<select name="alergenos" id="alergenos" size="4"
-				multiple>
-
-			</select>
-		</div>
-
-		<div class="form-group">
-			<input type="button" value="enviar">
-		</div>
+		<fieldset><div id="categsDish">  </div> </fieldset>
 		`);
+
+		let divPlatos = document.querySelector('#selDishes');
+		this.showSelectOptions(divPlatos, [...dishes].map(dish => dish.dish));
+		divPlatos.addEventListener('change', () => {
+			this.mostrarCategoriasPlatoForm(dishes, categories)
+		});
+	}
+
+	mostrarCategoriasPlatoForm(dishes, Allcategories) {
+		const select = document.getElementById("selDishes");
+		const categForm = document.getElementById("categsDish");
+		categForm.replaceChildren();
+
+		let dish = [...dishes].find(dish => dish.dish.name === select.value);
+
+		categForm.insertAdjacentHTML('beforeend', `
+			<div class="form-group">
+				<label for="dishCategories">CATEGORIAS DEL PLATO</label>
+				<select name="dishCategories" id="dishCategories" multiple size="3">
+
+				</select>
+				<input type="button" value="Desasignar" name="desasignarDishCategory" id="desasignarDishCategory">
+			</div>
+
+			<div class="form-group">
+			<label for="dispoCategories">CATEGORIAS DISPONIBLES PARA AÑADIR</label>
+			<select name="dispoCategories" id="dispoCategories" multiple size="6">
+			</select>
+			<input type="button" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
+			</div>
+			`);
+		// mostrar los platos de este menu
+		let dishCategories = dish.categories;
+		this.showSelectOptions(document.getElementById("dishCategories"), dishCategories);
+		// mostrar todos los platos de la aplicacion excepto los que ya estan añadidos
+		let dispoCategories = [...Allcategories];
+		dispoCategories = dispoCategories.filter(categ => !dishCategories.includes(categ));
+		this.showSelectOptions(document.getElementById("dispoCategories"), dispoCategories);
 	}
 
 
 
 
-	showSelectOptions(categories, allergens) {
+	showSelectOptions(select, options) {
 
-		const categorias = this.dishsForm.querySelector('#categorias');
-		const alergenos = this.dishsForm.querySelector('#alergenos');
-
-		for (const category of categories) {
+		for (const option of options) {
 
 			var nuevaOpcion = document.createElement("option");
 
-			nuevaOpcion.value = category.name;
-			nuevaOpcion.textContent = category.name;
+			nuevaOpcion.value = option.name;
+			nuevaOpcion.textContent = option.name;
 
-			categorias.appendChild(nuevaOpcion);
+			select.appendChild(nuevaOpcion);
 		}
 
-		for (const allergen of allergens) {
-			var nuevaOpcion = document.createElement("option");
-
-			nuevaOpcion.value = allergen.name;
-			nuevaOpcion.textContent = allergen.name;
-
-			alergenos.appendChild(nuevaOpcion);
-		}
 	}
 
 }

@@ -344,7 +344,14 @@ let RestaurantsManager = (function () { //La función anónima devuelve un méto
                         this.addMenu(menu);
                         menpos = this.#menus.findIndex(m => m.menu.name === menu.name);
                     }
-                    this.#menus[menpos].dishes.push(actDish);
+                    // si el plato ya esta en el menu no se añade
+                    if (this.#menus[menpos].dishes.findIndex(d => d.dish === dish) === -1) {
+                        this.#menus[menpos].dishes.push(actDish);
+                    } else {
+                        throw new DishExistsException();
+                    }
+
+
                 }
                 return this;
             }

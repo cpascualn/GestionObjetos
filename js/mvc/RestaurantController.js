@@ -181,10 +181,10 @@ class RestaurantController {
         const gestiones = [
             { nombre: "addDish", funcion: () => this[VIEW].addDishForm(this[MODEL].categories, this[MODEL].allergens) },
             { nombre: "removeDish", funcion: () => this[VIEW].removeDishForm(this[MODEL].dishes) },
-            { nombre: "manageMenu", funcion: () => this[VIEW].manageMenuForm(this[MODEL].menus) },
-            { nombre: "manageCat", funcion: () => this[VIEW].manageCatForm() },
+            { nombre: "manageMenu", funcion: () => this[VIEW].manageMenuForm(this[MODEL].menus, this[MODEL].dishes) },
+            { nombre: "manageCat", funcion: () => this[VIEW].manageCatForm(this[MODEL].categories) },
             { nombre: "addRest", funcion: () => this[VIEW].addRestForm() },
-            { nombre: "modifyCat", funcion: () => this[VIEW].modifyCatForm() }
+            { nombre: "modifyCat", funcion: () => this[VIEW].modifyCatForm(this[MODEL].dishes, this[MODEL].categories) }
         ];
 
         let funcion = gestiones.find(ges => ges.nombre === gestion).funcion;
