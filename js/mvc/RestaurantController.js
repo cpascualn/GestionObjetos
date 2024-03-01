@@ -29,6 +29,7 @@ class RestaurantController {
             this[VIEW].bindCategoryList(this.handleCategoryList);
             this[VIEW].modifyBreadcrumb(null);
             this[VIEW].bindShowDish(this.handleShowDish);
+            this[VIEW].hideForm();
         } catch (error) {
 
         }
@@ -120,6 +121,7 @@ class RestaurantController {
         this[VIEW].showCategories(this[MODEL].categories);
         this[VIEW].bindCategoryList(this.handleCategoryList);
         this[VIEW].bindShowDish(this.handleShowDish);
+        this[VIEW].hideForm();
     }
 
     handleAllergenList = () => {// manejar cuando se pulsa  alergenos en el menu para mostrar un nuevo menu con los alergenos disponibles
@@ -127,6 +129,7 @@ class RestaurantController {
         this[VIEW].bindAllergen(this.handleAllergenDishes);
         this[VIEW].modifyBreadcrumb(null);
         this[VIEW].bindShowDish(this.handleShowDish);
+        this[VIEW].hideForm();
     }
 
     handleAllergenDishes = (allergenName) => { // manejar cuando se pulsa un alergeno del nuevo menu de alergenos generado  y mostrar sus platos
@@ -135,6 +138,7 @@ class RestaurantController {
         this[VIEW].showDishes(dishs);
         this[VIEW].modifyBreadcrumb(allergenName);
         this[VIEW].bindShowDish(this.handleShowDish);
+        this[VIEW].hideForm();
     }
 
 
@@ -143,6 +147,7 @@ class RestaurantController {
         this[VIEW].showMenus(menus);
         this[VIEW].bindMenu(this.handleMenuDishes);
         this[VIEW].modifyBreadcrumb(null);
+        this[VIEW].hideForm();
     }
 
 
@@ -152,18 +157,21 @@ class RestaurantController {
         this[VIEW].showDishes(dishs);
         this[VIEW].modifyBreadcrumb(menuName);
         this[VIEW].bindShowDish(this.handleShowDish);
+        this[VIEW].hideForm();
     }
 
     handleRestaurants = (restName) => { // mostrar restaurante pulsado en el menu
         let restaurant = [...this[MODEL].restaurants].find(rest => rest.name.replace(/\s/g, '') === restName);
         this[VIEW].showRestaurant(restaurant);
         this[VIEW].modifyBreadcrumb(restName);
+        this[VIEW].hideForm();
     }
 
     handleShowDish = (dishName) => {
         // cuando muestras un plato, asignar enlace al boton nueva ventana
         this[VIEW].bindShowDishInNewWindow(this.handleShowDishInNewWindow);
         console.log("mostrar plato " + dishName);
+        this[VIEW].hideForm();
     }
 
     handleShowDishInNewWindow = (dishName) => {

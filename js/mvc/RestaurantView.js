@@ -430,6 +430,10 @@ class RestaurantView {
 
 	}
 
+	hideForm() {
+		document.getElementById("Form").replaceChildren();
+	}
+
 
 	addDishForm(categories, allergens) {
 		this.dishsForm.replaceChildren();
@@ -717,9 +721,6 @@ class RestaurantView {
 		dispoCategories = dispoCategories.filter(categ => !dishCategories.includes(categ));
 		this.showSelectOptions(document.getElementById("dispoCategories"), dispoCategories);
 	}
-
-
-
 
 	showSelectOptions(select, options) {
 
