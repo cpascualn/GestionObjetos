@@ -1,4 +1,4 @@
-import { Coordinate } from './objetos.js';
+import { Dish, Category, Allergen, Menu, Restaurant, Coordinate } from './objetos.js';
 const MODEL = Symbol('RestaurantModel');
 const VIEW = Symbol('RestaurantView');
 
@@ -187,18 +187,50 @@ class RestaurantController {
     // recibe el nombre del tipo de formulario a mostrar
     handleShowForm = (gestion) => {
         const gestiones = [
-            { nombre: "addDish", funcion: () => this[VIEW].addDishForm(this[MODEL].categories, this[MODEL].allergens) },
-            { nombre: "removeDish", funcion: () => this[VIEW].removeDishForm(this[MODEL].dishes) },
-            { nombre: "manageMenu", funcion: () => this[VIEW].manageMenuForm(this[MODEL].menus, this[MODEL].dishes) },
-            { nombre: "manageCat", funcion: () => this[VIEW].manageCatForm(this[MODEL].categories) },
-            { nombre: "addRest", funcion: () => this[VIEW].addRestForm() },
-            { nombre: "modifyCat", funcion: () => this[VIEW].modifyCatForm(this[MODEL].dishes, this[MODEL].categories) }
+            { nombre: "addDish", show: () => this[VIEW].addDishForm(this[MODEL].categories, this[MODEL].allergens), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
+            { nombre: "removeDish", show: () => this[VIEW].removeDishForm(this[MODEL].dishes), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
+            { nombre: "manageMenu", show: () => this[VIEW].manageMenuForm(this[MODEL].menus, this[MODEL].dishes), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
+            { nombre: "manageCat", show: () => this[VIEW].manageCatForm(this[MODEL].categories), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
+            { nombre: "addRest", show: () => this[VIEW].addRestForm(), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
+            { nombre: "modifyCat", show: () => this[VIEW].modifyCatForm(this[MODEL].dishes, this[MODEL].categories), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) }
         ];
 
-        let funcion = gestiones.find(ges => ges.nombre === gestion).funcion;
-        // recoger la funcion y , si existe , llamarla
-        funcion ? funcion() : console.log("no existe");
+        let funcion = gestiones.find(ges => ges.nombre === gestion);
 
+
+        // recoger la funcion y , si existe , llamarla y despues hacer el bind
+        funcion ? funcion.show() : console.log("no existe");
+        funcion ? funcion.bind() : console.log("no existe");
+    }
+
+    handleCreateDish = (name, description = '', ingredients, image, categories = [], allergens = []) => {
+        let done; let error; let dish;
+        image = image.replace(/^.*[\\/]/, 'img/Platos/');
+
+        // ingredients = categories.split(',');
+
+        try {
+            dish = this[MODEL].createDish(name, description, ingredients, image);
+
+            categories.forEach((nombre) => {
+                // intenta crearla, como ya existe devuelve la que existe
+                let category = this[MODEL].createCategory(nombre);
+                this[MODEL].assignCategoryToDish(category, dish);
+            });
+
+            allergens.forEach((nombre) => {
+                // intenta crearla, como ya existe devuelve la que existe
+                let allergen = this[MODEL].createAllergen(nombre);
+                this[MODEL].assignAllergenToDish(allergen, dish);
+            });
+
+            done = true;
+        } catch (exception) {
+            done = false;
+            error = exception;
+        }
+
+        this[VIEW].showNewDishModal(done, dish, error);
     }
 
     handleCloseWindows = () => {

@@ -271,7 +271,11 @@ let RestaurantsManager = (function () { //La función anónima devuelve un méto
                     }
                     // recoge la categoria del array para añadir la ya existente
                     cat = this.#categories[cat];
-                    this.#dishes[dispos].categories.push(cat);
+                    // si el plato no tiene la categoria
+                    if (this.#dishes[dispos].categories.findIndex(cat => cat.name === category.name) === -1) {
+                        this.#dishes[dispos].categories.push(cat);
+                    }
+
                 }
                 return this;
             }
@@ -307,7 +311,12 @@ let RestaurantsManager = (function () { //La función anónima devuelve un méto
                         al = this.#allergens.indexOf(allergen);
                     }
                     al = this.#allergens[al];
-                    this.#dishes[dispos].allergens.push(al);
+
+                    if (this.#dishes[dispos].allergens.findIndex(al => al.name === allergen.name) === -1) {
+                        this.#dishes[dispos].allergens.push(al);
+                    }
+
+                   
                 }
                 return this;
             }

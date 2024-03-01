@@ -1,3 +1,4 @@
+import { newDishValidation } from '../validation.js';
 const EXCECUTE_HANDLER = Symbol('excecuteHandler');
 class RestaurantView {
 
@@ -446,43 +447,55 @@ class RestaurantView {
 		<h2>AÑADIR PLATO</h2>
 		<div class="form-group">
 			<label for="nombre">Nombre</label><input type="text"
-				name="nombre">
+				name="nombre" required>
+				<div class="invalid-feedback">El campo es obligatorio.</div>
+				<div class="valid-feedback">Correcto.</div>
+
 		</div>
 
 		<div class="form-group">
 			<label for="descripcion">Descripcion</label><input
 				type="text" name="descripcion">
+				<div class="invalid-feedback"></div>
+				<div class="valid-feedback">Correcto.</div>
 		</div>
 
 		<div class="form-group">
 			<label for="ingredientes">Ingredientes</label><input
 				type="text" name="ingredientes"
-				placeholder="separe los ingredientes entre comas , ">
+				placeholder="separe los ingredientes entre comas , " required>
+				<div class="invalid-feedback">El campo es obligatorio.</div>
+				<div class="valid-feedback">Correcto.</div>
 		</div>
 
 		<div class="form-group">
 
 			<label for="imagen">Imagen</label><input type="file"
-				name="imagen" accept="image/*">
+				name="imagen" accept="image/*" required>
+				<div class="invalid-feedback">El campo es obligatorio.</div>
+				<div class="valid-feedback">Correcto.</div>
 		</div>
 		<div class="form-group">
 			<label for="categorias">Categorias</label>
 			<select name="categorias" id="categorias" size="4"
-				multiple>
+				multiple >
 
 			</select>
+
 		</div>
 
 		<div class="form-group">
 			<label for="alergenos">Alergenos</label>
 			<select name="alergenos" id="alergenos" size="4"
-				multiple>
+				multiple >
 
 			</select>
+
 		</div>
 
 		<div class="form-group">
-			<input type="button" value="enviar" name="asignarDish" id="asignarDish">
+			<button type="submit" class="btn btn-primary">enviar</button>
+			<button class="btn btn-primary" type="reset">Cancelar</button>
 		</div>
 		`);
 
@@ -493,6 +506,41 @@ class RestaurantView {
 		this.showSelectOptions(categorias, categories);
 		this.showSelectOptions(alergenos, allergens);
 	}
+	bindNewDishForm(handler) {
+
+		newDishValidation(handler);
+	}
+
+	showNewDishModal(done, dish, error) {
+		const messageModalContainer = document.getElementById('messageModal');
+		const messageModal = new bootstrap.Modal('#messageModal');
+		const title = document.getElementById('messageModalTitle');
+		title.innerHTML = 'Nueva Categoría';
+		const body = messageModalContainer.querySelector('.modal-body');
+		body.replaceChildren();
+		if (done) {
+			body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoría
+<strong>${dish.name}</strong> ha sido creada correctamente.</div>`);
+		} else {
+			body.insertAdjacentHTML(
+				'afterbegin',
+				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> La categoría <strong>${dish.name}</strong> ya está
+creada.</div>`,
+			);
+		}
+		messageModal.show();
+		const listener = (event) => {
+			if (done) {
+				document.Form.reset();
+			}
+			document.Form.nombre.focus();
+		};
+		messageModalContainer.addEventListener('hidden.bs.modal', listener, {
+			once: true
+		});
+	}
+
+
 
 	removeDishForm(dishes) {
 		this.dishsForm.replaceChildren();
@@ -513,7 +561,7 @@ class RestaurantView {
 		</div>
 
 		<div class="form-group">
-			<input type="button" value="enviar" name="borrarDish" id="borrarDish">
+			<input type="submit" value="enviar" name="borrarDish" id="borrarDish">
 		</div>
 		`);
 
@@ -565,15 +613,15 @@ class RestaurantView {
 				<select name="menusDishes" id="menusDishes" multiple size="3">
 
 				</select>
-				<input type="button" value="Desasignar" name="desasignarDishMenu" id="desasignarDishMenu">
-				<input type="button" value="Intercambiar Posiciones" name="intercambiarDishMenu" id="intercambiarDishMenu">
+				<input type="submit" value="Desasignar" name="desasignarDishMenu" id="desasignarDishMenu">
+				<input type="submit" value="Intercambiar Posiciones" name="intercambiarDishMenu" id="intercambiarDishMenu">
 			</div>
 
 			<div class="form-group">
 			<label for="dispoDishes">PLATOS DISPONIBLES PARA AÑADIR</label>
 			<select name="dispoDishes" id="dispoDishes" multiple size="6">
 			</select>
-			<input type="button" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
+			<input type="submit" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
 			</div>
 			`);
 			// mostrar los platos de este menu
@@ -607,7 +655,7 @@ class RestaurantView {
 		</div>
 
 		<div class="form-group">
-			<input type="button" value="añadir" name="addCateg" id="addCateg">
+			<input type="submit" value="añadir" name="addCateg" id="addCateg">
 		</div>
 		</fieldset>
 		<fieldset>
@@ -621,7 +669,7 @@ class RestaurantView {
 		</div>
 
 		<div class="form-group">
-			<input type="button" value="eliminar" name="remCateg" id="remCateg">
+			<input type="submit" value="eliminar" name="remCateg" id="remCateg">
 		</div>
 		</fieldset>
 		`);
@@ -659,7 +707,7 @@ class RestaurantView {
 		</div>
 
 		<div class="form-group">
-			<input type="button" value="enviar">
+			<input type="submit" value="enviar">
 		</div>
 		`);
 	}
@@ -703,14 +751,14 @@ class RestaurantView {
 				<select name="dishCategories" id="dishCategories" multiple size="3">
 
 				</select>
-				<input type="button" value="Desasignar" name="desasignarDishCategory" id="desasignarDishCategory">
+				<input type="submit" value="Desasignar" name="desasignarDishCategory" id="desasignarDishCategory">
 			</div>
 
 			<div class="form-group">
 			<label for="dispoCategories">CATEGORIAS DISPONIBLES PARA AÑADIR</label>
 			<select name="dispoCategories" id="dispoCategories" multiple size="6">
 			</select>
-			<input type="button" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
+			<input type="submit" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
 			</div>
 			`);
 		// mostrar los platos de este menu
