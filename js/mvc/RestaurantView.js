@@ -519,19 +519,21 @@ class RestaurantView {
 		const body = messageModalContainer.querySelector('.modal-body');
 		body.replaceChildren();
 		if (done) {
-			body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoría
+			body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato
 <strong>${dish.name}</strong> ha sido creada correctamente.</div>`);
 		} else {
 			body.insertAdjacentHTML(
 				'afterbegin',
-				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> La categoría <strong>${dish.name}</strong> ya está
+				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> El plato <strong>${dish.name}</strong> ya está
 creada.</div>`,
 			);
 		}
 		messageModal.show();
 		const listener = (event) => {
+			console.log(document.Form);
+			console.log(done);
 			if (done) {
-				document.Form.reset();
+				document.forms["Form"].reset();
 			}
 			document.Form.nombre.focus();
 		};

@@ -15,7 +15,7 @@ function showFeedBack(input, valid, message) {
 }
 
 function defaultCheckElement(event) {
-     this.value = this.value.trim();
+    this.value = this.value.trim();
     if (!this.checkValidity()) {
         showFeedBack(this, false);
     } else {
@@ -30,7 +30,7 @@ function newDishValidation(handler) {
     form.addEventListener('submit', function (event) {
         let isValid = true;
         let firstInvalidElement = null;
-       
+
         this.nombre.value = this.nombre.value.trim();
         if (!this.nombre.checkValidity()) {
             isValid = false;
@@ -86,14 +86,15 @@ function newDishValidation(handler) {
         } else {
             let categorias = Array.from(this.categorias.selectedOptions).map(option => option.value);
             let alergenos = Array.from(this.alergenos.selectedOptions).map(option => option.value);
-            handler(this.nombre.value, this.descripcion.value, this.ingredientes.value, this.imagen.value,categorias , this.alergenos.value,);
+            handler(this.nombre.value, this.descripcion.value, this.ingredientes.value, this.imagen.value, categorias, alergenos);
         }
         event.stopPropagation();
         event.preventDefault();
-      
+
     });
 
     form.addEventListener('reset', (function (event) {
+        console.log("entra");
         for (const div of this.querySelectorAll('div.valid-feedback, div.invalid-feedback')) {
             div.classList.remove('d-block');
             div.classList.add('d-none');
@@ -102,7 +103,7 @@ function newDishValidation(handler) {
             input.classList.remove('is-valid');
             input.classList.remove('is-invalid');
         }
-        this.ingredientes.focus();
+        this.nombre.focus();
     }));
 
     form.nombre.addEventListener('change', defaultCheckElement);

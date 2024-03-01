@@ -220,10 +220,11 @@ class RestaurantController {
 
             allergens.forEach((nombre) => {
                 // intenta crearla, como ya existe devuelve la que existe
+                console.log(nombre);
                 let allergen = this[MODEL].createAllergen(nombre);
+                console.log(allergen);
                 this[MODEL].assignAllergenToDish(allergen, dish);
             });
-
             done = true;
         } catch (exception) {
             done = false;
