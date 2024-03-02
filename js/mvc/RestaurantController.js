@@ -189,7 +189,7 @@ class RestaurantController {
         const gestiones = [
             { nombre: "addDish", show: () => this[VIEW].addDishForm(this[MODEL].categories, this[MODEL].allergens), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
             { nombre: "removeDish", show: () => this[VIEW].removeDishForm(this[MODEL].dishes), bind: () => this[VIEW].bindRemoveDishForm(this.handleRemoveDish) },
-            { nombre: "manageMenu", show: () => this[VIEW].manageMenuForm(this[MODEL].menus, this[MODEL].dishes), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
+            { nombre: "manageMenu", show: () => this[VIEW].manageMenuForm(this[MODEL].menus, this[MODEL].dishes), bind: () => this[VIEW].bindManageMenuForm(this.handlemanageMenu) },
             { nombre: "manageCat", show: () => this[VIEW].manageCatForm(this[MODEL].categories), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
             { nombre: "addRest", show: () => this[VIEW].addRestForm(), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
             { nombre: "modifyCat", show: () => this[VIEW].modifyCatForm(this[MODEL].dishes, this[MODEL].categories), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) }
@@ -241,7 +241,7 @@ class RestaurantController {
             names.forEach(name => {
                 dish = this[MODEL].createDish(name);
                 this[MODEL].removeDish(dish);
-                done = true; 
+                done = true;
             });
         } catch (exception) {
             done = false;
@@ -250,6 +250,15 @@ class RestaurantController {
 
         this[VIEW].showRemoveDishModal(done, dish, error);
         this[VIEW].removeDishForm(this[MODEL].dishes)
+    }
+
+    handlemanageMenu = (platos, accion) => {
+        console.log(platos);
+        console.log(accion);
+        // dependiendo de la accion , borras, cambias o añades
+        // desasignarDishMenu
+        //  intercambiarDishMenu
+        //  asignarDishMenu
     }
 
     handleCloseWindows = () => {

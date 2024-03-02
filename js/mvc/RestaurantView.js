@@ -1,4 +1,4 @@
-import { newDishValidation, removeDishValidation } from '../validation.js';
+import { newDishValidation, removeDishValidation, manageMenuValidation } from '../validation.js';
 const EXCECUTE_HANDLER = Symbol('excecuteHandler');
 class RestaurantView {
 
@@ -493,8 +493,8 @@ class RestaurantView {
 		</div>
 
 		<div class="form-group">
-			<button type="submit" class="btn btn-primary">enviar</button>
-			<button class="btn btn-primary" type="reset">Cancelar</button>
+			<button type="submit" class="btn btn-success">enviar</button>
+			<button class="btn btn-danger" type="reset">Cancelar</button>
 		</div>
 		`);
 
@@ -561,7 +561,7 @@ creada.</div>`,
 		</div>
 
 		<div class="form-group">
-			<button type="submit" class="btn btn-primary" name="borrarDish" id="borrarDish">borrar</button>
+			<button type="submit" class="btn btn-danger" name="borrarDish" id="borrarDish">borrar</button>
 		</div>
 		`);
 
@@ -603,7 +603,7 @@ creada.</div>`,
 		});
 	}
 
-	manageMenuForm(menus, AllDishes) {
+	manageMenuForm(menus,allDishes) {
 		// añadir en categories la opcion asignar y otra con opcion desasignar
 
 		this.dishsForm.replaceChildren();
@@ -626,8 +626,9 @@ creada.</div>`,
 		let divMenus = document.querySelector('#menusSel');
 		this.showSelectOptions(divMenus, [...menus].map(menu => menu.menu));
 		divMenus.addEventListener('change', () => {
-			this.mostrarMenuForm(menus, AllDishes)
+			this.mostrarMenuForm(menus, allDishes)
 		});
+
 	}
 
 	mostrarMenuForm(menus, AllDishes) { // mostrar los platos del menu
@@ -645,15 +646,15 @@ creada.</div>`,
 				<select name="menusDishes" id="menusDishes" multiple size="3">
 
 				</select>
-				<button type="submit" value="Desasignar" name="desasignarDishMenu" id="desasignarDishMenu">
-				<button type="submit" value="Intercambiar Posiciones" name="intercambiarDishMenu" id="intercambiarDishMenu">
+				<button type="submit" class="btn btn-danger"  name="desasignarDishMenu" id="desasignarDishMenu">Desasignar</button>
+				<button type="submit" class="btn btn-warning"  name="intercambiarDishMenu" id="intercambiarDishMenu">Intercambiar Posiciones</button>
 			</div>
 
 			<div class="form-group">
 			<label for="dispoDishes">PLATOS DISPONIBLES PARA AÑADIR</label>
 			<select name="dispoDishes" id="dispoDishes" multiple size="6">
 			</select>
-			<button type="submit" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
+			<button type="submit" class="btn btn-success" name="asignarDishMenu" id="asignarDishMenu">Asignar</button>
 			</div>
 			`);
 			// mostrar los platos de este menu
@@ -664,6 +665,13 @@ creada.</div>`,
 			dispoDishes = dispoDishes.filter(dish => !menusDishes.includes(dish));
 			this.showSelectOptions(document.getElementById("dispoDishes"), dispoDishes);
 		}
+	}
+
+	bindManageMenuForm(handler) {
+		let divMenus = document.querySelector('#menusSel');
+		divMenus.addEventListener('change', () => {
+			manageMenuValidation(handler)
+		});
 	}
 
 	manageCatForm(categories) {

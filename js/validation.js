@@ -109,21 +109,37 @@ function removeDishValidation(handler) {
 
     });
 
-    // form.addEventListener('reset', (function (event) {
-    //     console.log("entra");
-    //     for (const div of this.querySelectorAll('div.valid-feedback, div.invalid-feedback')) {
-    //         div.classList.remove('d-block');
-    //         div.classList.add('d-none');
-    //     }
-    //     for (const input of this.querySelectorAll('input')) {
-    //         input.classList.remove('is-valid');
-    //         input.classList.remove('is-invalid');
-    //     }
-    //     this.platos.focus();
-    // }));
+}
+
+
+function manageMenuValidation(handler) {
+    const form = document.forms.Form;
+    form.setAttribute('novalidate', true);
+    form.addEventListener('submit', function (event) {
+        let platos;
+        let accion = event.submitter.id
+        // si la accion es desasignar o intercambiar ,validar y  pasar al handler el array de platos seleccionados de #menuDishes
+        // si es asignar validar y pasar array de seleccionados #dispoDishes
+
+        //falta validar
+
+
+        if (accion == 'asignarDishMenu') {
+            platos = Array.from(this.dispoDishes.selectedOptions).map(option => option.value);
+        } else {
+            platos = Array.from(this.menusDishes.selectedOptions).map(option => option.value);
+        }
+        // console.log(platos);
+        // let isValid = true;
+
+        handler(platos, accion);
+
+        event.stopPropagation();
+        event.preventDefault();
+    });
 
 }
 
 
 
-export { newDishValidation, removeDishValidation };
+export { newDishValidation, removeDishValidation, manageMenuValidation };
