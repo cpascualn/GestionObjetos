@@ -65,22 +65,6 @@ function newDishValidation(handler) {
             showFeedBack(this.imagen, true);
         }
 
-        // if (!this.categorias.checkValidity()) {
-        //     isValid = false;
-        //     showFeedBack(this.categorias, false);
-        //     firstInvalidElement = this.categorias;
-        // } else {
-        //     showFeedBack(this.categorias, true);
-        // }
-
-        // if (!this.alergenos.checkValidity()) {
-        //     isValid = false;
-        //     showFeedBack(this.alergenos, false);
-        //     firstInvalidElement = this.alergenos;
-        // } else {
-        //     showFeedBack(this.alergenos, true);
-        // }
-
         if (!isValid) {
             firstInvalidElement.focus();
         } else {
@@ -110,6 +94,36 @@ function newDishValidation(handler) {
     form.ingredientes.addEventListener('change', defaultCheckElement);
 }
 
+function removeDishValidation(handler) {
+    const form = document.forms.Form;
+    form.setAttribute('novalidate', true);
+    form.addEventListener('submit', function (event) {
+        let isValid = true;
+        let firstInvalidElement = null;
+
+        let platos = Array.from(this.platos.selectedOptions).map(option => option.value);
+        handler(platos);
+
+        event.stopPropagation();
+        event.preventDefault();
+
+    });
+
+    // form.addEventListener('reset', (function (event) {
+    //     console.log("entra");
+    //     for (const div of this.querySelectorAll('div.valid-feedback, div.invalid-feedback')) {
+    //         div.classList.remove('d-block');
+    //         div.classList.add('d-none');
+    //     }
+    //     for (const input of this.querySelectorAll('input')) {
+    //         input.classList.remove('is-valid');
+    //         input.classList.remove('is-invalid');
+    //     }
+    //     this.platos.focus();
+    // }));
+
+}
 
 
-export { newDishValidation };
+
+export { newDishValidation, removeDishValidation };

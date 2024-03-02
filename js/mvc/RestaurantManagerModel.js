@@ -314,7 +314,7 @@ let RestaurantsManager = (function () { //La función anónima devuelve un méto
 
                     if (this.#dishes[dispos].allergens.findIndex(aler => aler.name === allergen.name) === -1) {
                         this.#dishes[dispos].allergens.push(al);
-                    }  
+                    }
                 }
                 return this;
             }

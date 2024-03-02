@@ -1,4 +1,4 @@
-import { newDishValidation } from '../validation.js';
+import { newDishValidation, removeDishValidation } from '../validation.js';
 const EXCECUTE_HANDLER = Symbol('excecuteHandler');
 class RestaurantView {
 
@@ -309,7 +309,6 @@ class RestaurantView {
 
 	showDishInNewWindow(dish, message) {
 		// encontrar la ventana llamada dish + 'DishWindow'
-		console.log(this.dishWindows);
 		let window = this.dishWindows.find(window => window.name === (dish.name.replace(/\s/g, '') + "DishWindow"));
 		let platosDiv = window.document.getElementById('plato');
 		let header = window.document.getElementById('h-title');
@@ -507,7 +506,6 @@ class RestaurantView {
 		this.showSelectOptions(alergenos, allergens);
 	}
 	bindNewDishForm(handler) {
-
 		newDishValidation(handler);
 	}
 
@@ -530,8 +528,6 @@ creada.</div>`,
 		}
 		messageModal.show();
 		const listener = (event) => {
-			console.log(document.Form);
-			console.log(done);
 			if (done) {
 				document.forms["Form"].reset();
 			}
@@ -557,20 +553,54 @@ creada.</div>`,
 		<div class="form-group">
 			<label for="platos">PLATOS</label>
 			<select name="platos" id="remDishes" size="8"
-				multiple>
+				multiple required>
 
 			</select>
+			<div class="invalid-feedback">El campo es obligatorio.</div>
+				<div class="valid-feedback">Correcto.</div>
 		</div>
 
 		<div class="form-group">
-			<input type="submit" value="enviar" name="borrarDish" id="borrarDish">
+			<button type="submit" class="btn btn-primary" name="borrarDish" id="borrarDish">borrar</button>
 		</div>
 		`);
 
 		let divPlatos = document.querySelector('#remDishes');
 
 		this.showSelectOptions(divPlatos, [...dishes].map(dish => dish.dish));
+	}
+	bindRemoveDishForm(handler) {
+		removeDishValidation(handler);
+	}
 
+
+	showRemoveDishModal(done, dish, error) {
+		const messageModalContainer = document.getElementById('messageModal');
+		const messageModal = new bootstrap.Modal('#messageModal');
+		const title = document.getElementById('messageModalTitle');
+		title.innerHTML = 'Nueva Categoría';
+		const body = messageModalContainer.querySelector('.modal-body');
+		body.replaceChildren();
+		if (done) {
+			body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato
+<strong>${dish.name}</strong> ha sido borrada correctamente.</div>`);
+		} else {
+			body.insertAdjacentHTML(
+				'afterbegin',
+				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> ${error}</div>`,
+			);
+		}
+		messageModal.show();
+		const listener = (event) => {
+
+			if (done) {
+				document.forms["Form"].reset();
+			}
+			document.Form.platos.focus();
+		};
+		messageModalContainer.addEventListener('hidden.bs.modal', listener, {
+			once: true
+		});
 	}
 
 	manageMenuForm(menus, AllDishes) {
@@ -615,15 +645,15 @@ creada.</div>`,
 				<select name="menusDishes" id="menusDishes" multiple size="3">
 
 				</select>
-				<input type="submit" value="Desasignar" name="desasignarDishMenu" id="desasignarDishMenu">
-				<input type="submit" value="Intercambiar Posiciones" name="intercambiarDishMenu" id="intercambiarDishMenu">
+				<button type="submit" value="Desasignar" name="desasignarDishMenu" id="desasignarDishMenu">
+				<button type="submit" value="Intercambiar Posiciones" name="intercambiarDishMenu" id="intercambiarDishMenu">
 			</div>
 
 			<div class="form-group">
 			<label for="dispoDishes">PLATOS DISPONIBLES PARA AÑADIR</label>
 			<select name="dispoDishes" id="dispoDishes" multiple size="6">
 			</select>
-			<input type="submit" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
+			<button type="submit" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
 			</div>
 			`);
 			// mostrar los platos de este menu
@@ -657,7 +687,7 @@ creada.</div>`,
 		</div>
 
 		<div class="form-group">
-			<input type="submit" value="añadir" name="addCateg" id="addCateg">
+			<button type="submit" value="añadir" name="addCateg" id="addCateg">
 		</div>
 		</fieldset>
 		<fieldset>
@@ -671,7 +701,7 @@ creada.</div>`,
 		</div>
 
 		<div class="form-group">
-			<input type="submit" value="eliminar" name="remCateg" id="remCateg">
+			<button type="submit" value="eliminar" name="remCateg" id="remCateg">
 		</div>
 		</fieldset>
 		`);
@@ -709,7 +739,7 @@ creada.</div>`,
 		</div>
 
 		<div class="form-group">
-			<input type="submit" value="enviar">
+			<button type="submit" value="enviar">
 		</div>
 		`);
 	}
@@ -750,17 +780,17 @@ creada.</div>`,
 		categForm.insertAdjacentHTML('beforeend', `
 			<div class="form-group">
 				<label for="dishCategories">CATEGORIAS DEL PLATO</label>
-				<select name="dishCategories" id="dishCategories" multiple size="3">
+				<select name="dishCategories" id="dishCategories" multiple size="3" >
 
 				</select>
-				<input type="submit" value="Desasignar" name="desasignarDishCategory" id="desasignarDishCategory">
+				<button type="submit" value="Desasignar" name="desasignarDishCategory" id="desasignarDishCategory">
 			</div>
 
 			<div class="form-group">
 			<label for="dispoCategories">CATEGORIAS DISPONIBLES PARA AÑADIR</label>
 			<select name="dispoCategories" id="dispoCategories" multiple size="6">
 			</select>
-			<input type="submit" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
+			<button type="submit" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
 			</div>
 			`);
 		// mostrar los platos de este menu

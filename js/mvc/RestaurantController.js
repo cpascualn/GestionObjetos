@@ -188,7 +188,7 @@ class RestaurantController {
     handleShowForm = (gestion) => {
         const gestiones = [
             { nombre: "addDish", show: () => this[VIEW].addDishForm(this[MODEL].categories, this[MODEL].allergens), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
-            { nombre: "removeDish", show: () => this[VIEW].removeDishForm(this[MODEL].dishes), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
+            { nombre: "removeDish", show: () => this[VIEW].removeDishForm(this[MODEL].dishes), bind: () => this[VIEW].bindRemoveDishForm(this.handleRemoveDish) },
             { nombre: "manageMenu", show: () => this[VIEW].manageMenuForm(this[MODEL].menus, this[MODEL].dishes), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
             { nombre: "manageCat", show: () => this[VIEW].manageCatForm(this[MODEL].categories), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
             { nombre: "addRest", show: () => this[VIEW].addRestForm(), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
@@ -232,6 +232,24 @@ class RestaurantController {
         }
 
         this[VIEW].showNewDishModal(done, dish, error);
+    }
+
+    handleRemoveDish = (names) => {
+        let done; let error; let dish;
+
+        try {
+            names.forEach(name => {
+                dish = this[MODEL].createDish(name);
+                this[MODEL].removeDish(dish);
+                done = true; 
+            });
+        } catch (exception) {
+            done = false;
+            error = exception;
+        }
+
+        this[VIEW].showRemoveDishModal(done, dish, error);
+        this[VIEW].removeDishForm(this[MODEL].dishes)
     }
 
     handleCloseWindows = () => {
