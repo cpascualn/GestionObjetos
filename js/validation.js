@@ -101,6 +101,11 @@ function removeDishValidation(handler) {
         let isValid = true;
         let firstInvalidElement = null;
 
+        if (this.platos.selectedIndex < 0) {
+            event.preventDefault();
+            alert(' selecciona al menos una opción.');
+        }
+
         let platos = Array.from(this.platos.selectedOptions).map(option => option.value);
         handler(platos);
 
@@ -116,23 +121,35 @@ function manageMenuValidation(handler) {
     const form = document.forms.Form;
     form.setAttribute('novalidate', true);
     form.addEventListener('submit', function (event) {
+        let menu = form.menus.value;
         let platos;
         let accion = event.submitter.id
         // si la accion es desasignar o intercambiar ,validar y  pasar al handler el array de platos seleccionados de #menuDishes
         // si es asignar validar y pasar array de seleccionados #dispoDishes
+        try {
+            if (accion == 'asignarDishMenu') {
 
-        //falta validar
+                if (this.dispoDishes.selectedIndex < 0)
+                    throw new Error('selecciona al menos una opción.');
+                console.log(this.dispoDishes.selectedIndex);
+                platos = Array.from(this.dispoDishes.selectedOptions).map(option => option.value);
+            } else if (accion == "desasignarDishMenu") {
+                if (this.menusDishes.selectedIndex < 0)
+                    throw new Error('selecciona al menos una opción.');
 
+                platos = Array.from(this.menusDishes.selectedOptions).map(option => option.value);
+            } else if (accion == "intercambiarDishMenu") {
+                if (this.menusDishes.selectedOptions.length !== 2)
+                    throw new Error('selecciona solo dos opciones.');
 
-        if (accion == 'asignarDishMenu') {
-            platos = Array.from(this.dispoDishes.selectedOptions).map(option => option.value);
-        } else {
-            platos = Array.from(this.menusDishes.selectedOptions).map(option => option.value);
+                platos = Array.from(this.menusDishes.selectedOptions).map(option => option.value);
+            }
+        } catch (error) {
+            error instanceof TypeError
+                ? console.error('Se ha producido un error:', error)
+                : alert(error);
         }
-        // console.log(platos);
-        // let isValid = true;
-
-        handler(platos, accion);
+        handler(menu, platos, accion);
 
         event.stopPropagation();
         event.preventDefault();

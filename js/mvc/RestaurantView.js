@@ -513,7 +513,7 @@ class RestaurantView {
 		const messageModalContainer = document.getElementById('messageModal');
 		const messageModal = new bootstrap.Modal('#messageModal');
 		const title = document.getElementById('messageModalTitle');
-		title.innerHTML = 'Nueva Categoría';
+		title.innerHTML = 'Nuevo Plato';
 		const body = messageModalContainer.querySelector('.modal-body');
 		body.replaceChildren();
 		if (done) {
@@ -578,7 +578,7 @@ creada.</div>`,
 		const messageModalContainer = document.getElementById('messageModal');
 		const messageModal = new bootstrap.Modal('#messageModal');
 		const title = document.getElementById('messageModalTitle');
-		title.innerHTML = 'Nueva Categoría';
+		title.innerHTML = 'borrar plato';
 		const body = messageModalContainer.querySelector('.modal-body');
 		body.replaceChildren();
 		if (done) {
@@ -603,7 +603,7 @@ creada.</div>`,
 		});
 	}
 
-	manageMenuForm(menus,allDishes) {
+	manageMenuForm(menus, allDishes) {
 		// añadir en categories la opcion asignar y otra con opcion desasignar
 
 		this.dishsForm.replaceChildren();
@@ -671,6 +671,96 @@ creada.</div>`,
 		let divMenus = document.querySelector('#menusSel');
 		divMenus.addEventListener('change', () => {
 			manageMenuValidation(handler)
+		});
+	}
+
+	showAddMenuDishModal(done, dishes, menu, error) {
+		const messageModalContainer = document.getElementById('messageModal');
+		const messageModal = new bootstrap.Modal('#messageModal');
+		const title = document.getElementById('messageModalTitle');
+		title.innerHTML = 'nuevo plato en menu';
+		const body = messageModalContainer.querySelector('.modal-body');
+		body.replaceChildren();
+		if (done) {
+			for (const dish of dishes) {
+				body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato
+<strong>${dish.name}</strong> ha sido añadido  correctamente. al menu <strong>${menu.name}</strong> </div>`);
+			}
+		} else {
+			body.insertAdjacentHTML(
+				'afterbegin',
+				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> ${error}</div>`,
+			);
+		}
+		messageModal.show();
+		const listener = (event) => {
+			if (done) {
+				document.forms["Form"].reset();
+			}
+			document.Form.menus.focus();
+		};
+		messageModalContainer.addEventListener('hidden.bs.modal', listener, {
+			once: true
+		});
+	}
+	showRemoveMenuDishModal(done, dishes, menu, error) {
+		const messageModalContainer = document.getElementById('messageModal');
+		const messageModal = new bootstrap.Modal('#messageModal');
+		const title = document.getElementById('messageModalTitle');
+		title.innerHTML = 'nuevo plato en menu';
+		const body = messageModalContainer.querySelector('.modal-body');
+		body.replaceChildren();
+		if (done) {
+			for (const dish of dishes) {
+				body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato
+<strong>${dish.name}</strong> ha sido eliminado  correctamente del menu <strong>${menu.name}</strong> </div>`);
+			}
+		} else {
+			body.insertAdjacentHTML(
+				'afterbegin',
+				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> ${error}</div>`,
+			);
+		}
+		messageModal.show();
+		const listener = (event) => {
+			if (done) {
+				document.forms["Form"].reset();
+			}
+			document.Form.menus.focus();
+		};
+		messageModalContainer.addEventListener('hidden.bs.modal', listener, {
+			once: true
+		});
+	}
+
+	showChangeMenuDishModal(done, dishes, menu, error) {
+		const messageModalContainer = document.getElementById('messageModal');
+		const messageModal = new bootstrap.Modal('#messageModal');
+		const title = document.getElementById('messageModalTitle');
+		title.innerHTML = 'nuevo plato en menu';
+		const body = messageModalContainer.querySelector('.modal-body');
+		body.replaceChildren();
+		if (done) {
+
+			body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato
+<strong>${dishes[0].name}</strong> ha cambiado su posicion con El plato
+<strong>${dishes[1].name}</strong>  correctamente en el  menu <strong>${menu.name}</strong> </div>`);
+
+		} else {
+			body.insertAdjacentHTML(
+				'afterbegin',
+				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> ${error}</div>`,
+			);
+		}
+		messageModal.show();
+		const listener = (event) => {
+			if (done) {
+				document.forms["Form"].reset();
+			}
+			document.Form.menus.focus();
+		};
+		messageModalContainer.addEventListener('hidden.bs.modal', listener, {
+			once: true
 		});
 	}
 

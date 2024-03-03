@@ -252,13 +252,44 @@ class RestaurantController {
         this[VIEW].removeDishForm(this[MODEL].dishes)
     }
 
-    handlemanageMenu = (platos, accion) => {
-        console.log(platos);
-        console.log(accion);
-        // dependiendo de la accion , borras, cambias o añades
-        // desasignarDishMenu
-        //  intercambiarDishMenu
-        //  asignarDishMenu
+    handlemanageMenu = (menuName, platos, accion) => {
+        let done; let error; let dishes = []; let menu;
+        // dependiendo de la accion , borras, cambias o añades  // desasignarDishMenu  intercambiarDishMenu  asignarDishMenu
+
+
+        try {
+            // recoger objeto menu y dish
+            platos.forEach(plato => {
+                dishes.push(this[MODEL].createDish(plato));
+            });
+            menu = this[MODEL].createMenu(menuName);
+
+            if (accion == "asignarDishMenu") {
+
+                this[MODEL].assignDishToMenu(menu, ...dishes);
+                done = true;
+                this[VIEW].showAddMenuDishModal(done, dishes, menu, error);
+
+            } else if (accion == "desasignarDishMenu") {
+                for (const dish of dishes) {
+                    this[MODEL].deassignDishToMenu(menu, dish);
+                }
+                done = true;
+                this[VIEW].showRemoveMenuDishModal(done, dishes, menu, error);
+
+            } else if (accion == "intercambiarDishMenu") {
+                //  solo puede entrar aqui si hay 2 platos
+                this[MODEL].changeDishesPositionsInMenu(menu, dishes[0], dishes[1]);
+                done = true;
+                this[VIEW].showChangeMenuDishModal(done, dishes, menu, error);
+            }
+        } catch (exception) {
+            done = false;
+            error = exception;
+        }
+
+
+        this[VIEW].manageMenuForm(this[MODEL].menus, this[MODEL].dishes)
     }
 
     handleCloseWindows = () => {

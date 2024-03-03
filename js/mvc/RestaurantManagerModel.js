@@ -485,7 +485,7 @@ let RestaurantsManager = (function () { //La función anónima devuelve un méto
 
             // crea el menu , si ya existe no lo crea , devuelve el objeto de la clase menu
             createMenu(name = '', description = '') {
-                let menpos = this.#menus.findIndex(m => m.menu === name);
+                let menpos = this.#menus.findIndex(m => m.menu.name === name);
                 if (menpos === -1) {
                     let menu = new Menu(name, description);
                     this.addMenu(menu);
