@@ -208,6 +208,11 @@ class RestaurantView {
 			let enlace = link.querySelector("a");
 			const gestion = enlace.dataset.gestion;
 			enlace.addEventListener('click', (event) => {
+				let activos = document.querySelectorAll(".dropdown-item.active");
+				activos.forEach(function (elemento) {
+					elemento.classList.remove("active");
+				});
+				enlace.classList.add("active");
 				this[EXCECUTE_HANDLER](
 					handler,
 					[gestion],
