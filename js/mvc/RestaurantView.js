@@ -1,4 +1,4 @@
-import { newDishValidation, removeDishValidation, manageMenuValidation } from '../validation.js';
+import { newDishValidation, removeDishValidation, manageMenuValidation, manageCatValidation, addRestValidation, modCategoryValidation } from '../validation.js';
 const EXCECUTE_HANDLER = Symbol('excecuteHandler');
 class RestaurantView {
 
@@ -10,7 +10,7 @@ class RestaurantView {
 		this.headText = document.getElementById("head_text");
 		this.restaurants = document.getElementById("restaurants");
 		this.dishWindows = Array();
-		this.dishsForm = document.getElementById("Form");
+		this.formWrap = document.getElementById("form__wrapper");
 	}
 
 	[EXCECUTE_HANDLER](handler, handlerArguments, scrollElement, data, url,
@@ -381,6 +381,7 @@ class RestaurantView {
 	}
 
 	loadRestaurants(restaurants) { // cargar el desplegable de restaurantes con los restaurantes que tenga el MODEL
+		this.restaurants.replaceChildren();
 		for (const restaurant of restaurants) {
 			let container = document.createElement('li');
 			let link = document.createElement('a');
@@ -431,18 +432,24 @@ class RestaurantView {
 	}
 
 	hideForm() {
-		document.getElementById("Form").replaceChildren();
+		document.getElementById("form__wrapper").replaceChildren();
 	}
 
 
 	addDishForm(categories, allergens) {
-		this.dishsForm.replaceChildren();
+		this.formWrap.replaceChildren();
 		this.headText.innerHTML = 'AÑADIR PLATO';
 
 		this.categories.innerHTML = '';
 		this.list.innerHTML = '';
 
-		this.dishsForm.insertAdjacentHTML('beforeend', `
+
+
+		this.formWrap.insertAdjacentHTML('beforeend', `
+		<form class="Form" id="Form" name="fAddDish" role="form"
+                    enctype="multipart/form-data" novalidate>
+
+                
 		<h2>AÑADIR PLATO</h2>
 		<div class="form-group">
 			<label for="nombre">Nombre</label><input type="text"
@@ -496,11 +503,12 @@ class RestaurantView {
 			<button type="submit" class="btn btn-success">enviar</button>
 			<button class="btn btn-danger" type="reset">Cancelar</button>
 		</div>
+		</form>
 		`);
 
 		// añadir add event listener al button el cual hacer [MODEL].createdish
-		const categorias = this.dishsForm.querySelector('#categorias');
-		const alergenos = this.dishsForm.querySelector('#alergenos');
+		const categorias = this.formWrap.querySelector('#categorias');
+		const alergenos = this.formWrap.querySelector('#alergenos');
 
 		this.showSelectOptions(categorias, categories);
 		this.showSelectOptions(alergenos, allergens);
@@ -529,9 +537,9 @@ creada.</div>`,
 		messageModal.show();
 		const listener = (event) => {
 			if (done) {
-				document.forms["Form"].reset();
+				document.forms["fAddDish"].reset();
 			}
-			document.Form.nombre.focus();
+			document.fAddDish.nombre.focus();
 		};
 		messageModalContainer.addEventListener('hidden.bs.modal', listener, {
 			once: true
@@ -539,17 +547,17 @@ creada.</div>`,
 	}
 
 
-
 	removeDishForm(dishes) {
-		this.dishsForm.replaceChildren();
+		this.formWrap.replaceChildren();
 		this.headText.innerHTML = 'BORRAR PLATO';
 
 		this.categories.innerHTML = '';
 		this.list.innerHTML = '';
 
 
-		this.dishsForm.insertAdjacentHTML('beforeend', `
-		<h2>BORRAR PLATO</h2>
+		this.formWrap.insertAdjacentHTML('beforeend', `
+		<form class="Form"  name="fRemDish" role="form" novalidate>
+
 		<div class="form-group">
 			<label for="platos">PLATOS</label>
 			<select name="platos" id="remDishes" size="8"
@@ -563,6 +571,7 @@ creada.</div>`,
 		<div class="form-group">
 			<button type="submit" class="btn btn-danger" name="borrarDish" id="borrarDish">borrar</button>
 		</div>
+		</form>
 		`);
 
 		let divPlatos = document.querySelector('#remDishes');
@@ -572,9 +581,7 @@ creada.</div>`,
 	bindRemoveDishForm(handler) {
 		removeDishValidation(handler);
 	}
-
-
-	showRemoveDishModal(done, dish, error) {
+	showRemoveDishModal(done, dishes, error) {
 		const messageModalContainer = document.getElementById('messageModal');
 		const messageModal = new bootstrap.Modal('#messageModal');
 		const title = document.getElementById('messageModalTitle');
@@ -582,8 +589,10 @@ creada.</div>`,
 		const body = messageModalContainer.querySelector('.modal-body');
 		body.replaceChildren();
 		if (done) {
-			body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato
-<strong>${dish.name}</strong> ha sido borrada correctamente.</div>`);
+			for (const dish of dishes) {
+				body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato
+										<strong>${dish.name}</strong> ha sido borrada correctamente.</div>`);
+			}
 		} else {
 			body.insertAdjacentHTML(
 				'afterbegin',
@@ -591,27 +600,18 @@ creada.</div>`,
 			);
 		}
 		messageModal.show();
-		const listener = (event) => {
-
-			if (done) {
-				document.forms["Form"].reset();
-			}
-			document.Form.platos.focus();
-		};
-		messageModalContainer.addEventListener('hidden.bs.modal', listener, {
-			once: true
-		});
 	}
 
 	manageMenuForm(menus, allDishes) {
 		// añadir en categories la opcion asignar y otra con opcion desasignar
 
-		this.dishsForm.replaceChildren();
+		this.formWrap.replaceChildren();
 		this.headText.innerHTML = 'GESTION DE MENUS';
 		this.categories.innerHTML = '';
 		this.list.innerHTML = '';
 
-		this.dishsForm.insertAdjacentHTML('beforeend', `
+		this.formWrap.insertAdjacentHTML('beforeend', `
+		<form class="Form" id="Form" name="fManMenu" role="form" novalidate>
 		<h2>GESTION DE MENUS</h2>
 
 		<div class="form-group">
@@ -621,6 +621,7 @@ creada.</div>`,
 			</select>
 		</div>
 		<fieldset><div id="MenuForm">  </div> </fieldset>
+		</form>
 		`);
 
 		let divMenus = document.querySelector('#menusSel');
@@ -695,9 +696,9 @@ creada.</div>`,
 		messageModal.show();
 		const listener = (event) => {
 			if (done) {
-				document.forms["Form"].reset();
+				document.forms["fManMenu"].reset();
 			}
-			document.Form.menus.focus();
+			document.fManMenu.menus.focus();
 		};
 		messageModalContainer.addEventListener('hidden.bs.modal', listener, {
 			once: true
@@ -724,9 +725,9 @@ creada.</div>`,
 		messageModal.show();
 		const listener = (event) => {
 			if (done) {
-				document.forms["Form"].reset();
+				document.forms["fManMenu"].reset();
 			}
-			document.Form.menus.focus();
+			document.fManMenu.menus.focus();
 		};
 		messageModalContainer.addEventListener('hidden.bs.modal', listener, {
 			once: true
@@ -755,9 +756,9 @@ creada.</div>`,
 		messageModal.show();
 		const listener = (event) => {
 			if (done) {
-				document.forms["Form"].reset();
+				document.forms["fManMenu"].reset();
 			}
-			document.Form.menus.focus();
+			document.fManMenu.menus.focus();
 		};
 		messageModalContainer.addEventListener('hidden.bs.modal', listener, {
 			once: true
@@ -765,27 +766,34 @@ creada.</div>`,
 	}
 
 	manageCatForm(categories) {
-		this.dishsForm.replaceChildren();
+		this.formWrap.replaceChildren();
 		this.headText.innerHTML = 'GESTIONAR CATEGORIA';
 
 		this.categories.innerHTML = '';
 		this.list.innerHTML = '';
 
-		this.dishsForm.insertAdjacentHTML('beforeend', `
+		this.formWrap.insertAdjacentHTML('beforeend', `
+		<form class="Form" id="Form" name="fManCateg" role="form" novalidate>
+
+                
 		<fieldset>
 		<h2>AÑADIR CATEGORIA</h2>
 		<div class="form-group">
 			<label for="nombre">Nombre</label><input type="text"
-				name="nombre">
+				name="nombre" required>
+				<div class="invalid-feedback">El campo es obligatorio.</div>
+				<div class="valid-feedback">Correcto.</div>
 		</div>
 
 		<div class="form-group">
 			<label for="descripcion">Descripcion</label><input
 				type="text" name="descripcion">
+				<div class="invalid-feedback"></div>
+				<div class="valid-feedback">Correcto.</div>
 		</div>
 
 		<div class="form-group">
-			<button type="submit" value="añadir" name="addCateg" id="addCateg">
+			<button type="submit" class="btn btn-success" name="addCateg" id="addCateg">añadir</button>
 		</div>
 		</fieldset>
 		<fieldset>
@@ -799,58 +807,140 @@ creada.</div>`,
 		</div>
 
 		<div class="form-group">
-			<button type="submit" value="eliminar" name="remCateg" id="remCateg">
+			<button type="submit"  class="btn btn-danger" name="remCateg" id="remCateg">eliminar</button>
 		</div>
 		</fieldset>
+		</form>
 		`);
 
 
 		this.showSelectOptions(document.getElementById("categoriasDispo"), [...categories]);
 	}
+	bindmanageCatForm(handler) {
+		manageCatValidation(handler);
+	}
+
+	showAddCategDishModal(done, categ, error) {
+
+		const messageModalContainer = document.getElementById('messageModal');
+		const messageModal = new bootstrap.Modal('#messageModal');
+		const title = document.getElementById('messageModalTitle');
+		title.innerHTML = 'nueva categoria';
+		const body = messageModalContainer.querySelector('.modal-body');
+		body.replaceChildren();
+		if (done) {
+			body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoria
+		<strong>${categ.name}</strong> ha sido añadida </div>`);
+		} else {
+			body.insertAdjacentHTML(
+				'afterbegin',
+				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> ${error}</div>`,
+			);
+		}
+		messageModal.show();
+	}
+
+	showRemoveCategDishModal(done, categories, error) {
+
+		const messageModalContainer = document.getElementById('messageModal');
+		const messageModal = new bootstrap.Modal('#messageModal');
+		const title = document.getElementById('messageModalTitle');
+		title.innerHTML = 'nueva categoria';
+		const body = messageModalContainer.querySelector('.modal-body');
+		body.replaceChildren();
+		if (done) {
+			for (const categ of categories) {
+				body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoria
+		<strong>${categ.name}</strong> ha sido borrada  </div>`);
+			}
+		} else {
+			body.insertAdjacentHTML(
+				'afterbegin',
+				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> ${error}</div>`,
+			);
+		}
+		messageModal.show();
+	}
 
 	addRestForm() {
-		this.dishsForm.replaceChildren();
+		this.formWrap.replaceChildren();
 		this.headText.innerHTML = 'AÑADIR RESTAURANTE';
 
 		this.categories.innerHTML = '';
 		this.list.innerHTML = '';
 
-		this.dishsForm.insertAdjacentHTML('beforeend', `
+		this.formWrap.insertAdjacentHTML('beforeend', `
+		<form class="Form" id="Form" name="fAddRest" role="form" novalidate>
 		<h2>AÑADIR RESTAURANTE</h2>
 		<div class="form-group">
 			<label for="nombre">Nombre</label><input type="text"
-				name="nombre">
+				name="nombre" required>
+				<div class="invalid-feedback">El campo es obligatorio.</div>
+				<div class="valid-feedback">Correcto.</div>
 		</div>
 
 		<div class="form-group">
 			<label for="descripcion">Descripcion</label><input
 				type="text" name="descripcion">
+				<div class="invalid-feedback"></div>
+				<div class="valid-feedback">Correcto.</div>
 		</div>
 
 		<div class="form-group">
 			<h3>Localizacion</h3>
 			<label for="latitud">latitud</label>
-			<input type="text" name="latitud">
+			<input type="text" name="latitud" required>
+			<div class="invalid-feedback">El campo es obligatorio.</div>
+				<div class="valid-feedback">Correcto.</div>
 
 			<label for="longitud">longitud</label>
-			<input type="text" name="longitud">
+			<input type="text" name="longitud" required>
+			<div class="invalid-feedback">El campo es obligatorio.</div>
+				<div class="valid-feedback">Correcto.</div>
 		</div>
 
 		<div class="form-group">
-			<button type="submit" value="enviar">
+			<button type="submit" class="btn btn-success">enviar</button>
 		</div>
+		</form>
 		`);
 	}
+	bindAddRestForm(handler) {
+		addRestValidation(handler);
+	}
+
+	showRestaurantModal(done, restaurant, error) {
+
+		const messageModalContainer = document.getElementById('messageModal');
+		const messageModal = new bootstrap.Modal('#messageModal');
+		const title = document.getElementById('messageModalTitle');
+		title.innerHTML = 'nueva categoria';
+		const body = messageModalContainer.querySelector('.modal-body');
+		body.replaceChildren();
+		if (done) {
+			body.insertAdjacentHTML('afterbegin', `<div class="p-3">El restaurante
+		<strong>${restaurant.name}</strong> ha sido creado  </div>`);
+
+		} else {
+			body.insertAdjacentHTML(
+				'afterbegin',
+				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> ${error}</div>`,
+			);
+		}
+		messageModal.show();
+	}
+
 
 	modifyCatForm(dishes, categories) {
-		this.dishsForm.replaceChildren();
+		this.formWrap.replaceChildren();
 		this.headText.innerHTML = 'SELECCIONAR PLATO';
 
 		this.categories.innerHTML = '';
 		this.list.innerHTML = '';
 
 
-		this.dishsForm.insertAdjacentHTML('beforeend', `
+		this.formWrap.insertAdjacentHTML('beforeend', `
+		<form class="Form" id="Form" name="fModCat" role="form" novalidate>
 		<h2>SELECCIONE UN PLATO</h2>
 		<div class="form-group">
 			<label for="platos">PLATOS</label>
@@ -859,6 +949,7 @@ creada.</div>`,
 			</select>
 		</div>
 		<fieldset><div id="categsDish">  </div> </fieldset>
+		</form> 
 		`);
 
 		let divPlatos = document.querySelector('#selDishes');
@@ -881,14 +972,14 @@ creada.</div>`,
 				<select name="dishCategories" id="dishCategories" multiple size="3" >
 
 				</select>
-				<button type="submit" value="Desasignar" name="desasignarDishCategory" id="desasignarDishCategory">
+				<button type="submit" class="btn btn-danger"  name="desasignarDishCategory" id="desasignarDishCategory">Desasignar</button>
 			</div>
 
 			<div class="form-group">
 			<label for="dispoCategories">CATEGORIAS DISPONIBLES PARA AÑADIR</label>
 			<select name="dispoCategories" id="dispoCategories" multiple size="6">
 			</select>
-			<button type="submit" value="Asignar" name="asignarDishMenu" id="asignarDishMenu">
+			<button type="submit" class="btn btn-success"  name="asignarDishCategory" id="asignarDishCategory">Asignar</button>
 			</div>
 			`);
 		// mostrar los platos de este menu
@@ -899,6 +990,56 @@ creada.</div>`,
 		dispoCategories = dispoCategories.filter(categ => !dishCategories.includes(categ));
 		this.showSelectOptions(document.getElementById("dispoCategories"), dispoCategories);
 	}
+	bindCatForm(handler) {
+		let divPlatos = document.querySelector('#selDishes');
+		divPlatos.addEventListener('change', () => {
+			modCategoryValidation(handler);
+		});
+
+	}
+
+	showAssignCatDishModal(done, categories, dish, error) {
+		const messageModalContainer = document.getElementById('messageModal');
+		const messageModal = new bootstrap.Modal('#messageModal');
+		const title = document.getElementById('messageModalTitle');
+		title.innerHTML = 'nueva categoria';
+		const body = messageModalContainer.querySelector('.modal-body');
+		body.replaceChildren();
+		if (done) {
+			for (const categ of categories) {
+				body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoria
+		<strong>${categ.name}</strong> ha sido asignada a <strong>${dish.name}</strong>  </div>`);
+			}
+		} else {
+			body.insertAdjacentHTML(
+				'afterbegin',
+				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> ${error}</div>`,
+			);
+		}
+		messageModal.show();
+	}
+
+	showRemCatDishModal(done, categories, dish, error) {
+		const messageModalContainer = document.getElementById('messageModal');
+		const messageModal = new bootstrap.Modal('#messageModal');
+		const title = document.getElementById('messageModalTitle');
+		title.innerHTML = 'nueva categoria';
+		const body = messageModalContainer.querySelector('.modal-body');
+		body.replaceChildren();
+		if (done) {
+			for (const categ of categories) {
+				body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoria
+		<strong>${categ.name}</strong> ha sido desasignada de <strong>${dish.name}</strong>   </div>`);
+			}
+		} else {
+			body.insertAdjacentHTML(
+				'afterbegin',
+				`<div class="error text-danger p-3"><i class="bi bi-exclamationtriangle"></i> ${error}</div>`,
+			);
+		}
+		messageModal.show();
+	}
+
 
 	showSelectOptions(select, options) {
 

@@ -25,7 +25,7 @@ function defaultCheckElement(event) {
 
 function newDishValidation(handler) {
 
-    const form = document.forms.Form;
+    let form = document.forms.fAddDish;
     form.setAttribute('novalidate', true);
     form.addEventListener('submit', function (event) {
         let isValid = true;
@@ -78,7 +78,6 @@ function newDishValidation(handler) {
     });
 
     form.addEventListener('reset', (function (event) {
-        console.log("entra");
         for (const div of this.querySelectorAll('div.valid-feedback, div.invalid-feedback')) {
             div.classList.remove('d-block');
             div.classList.add('d-none');
@@ -95,30 +94,33 @@ function newDishValidation(handler) {
 }
 
 function removeDishValidation(handler) {
-    const form = document.forms.Form;
+
+    let form = document.forms.fRemDish;
+
     form.setAttribute('novalidate', true);
     form.addEventListener('submit', function (event) {
-        let isValid = true;
-        let firstInvalidElement = null;
+        try {
 
-        if (this.platos.selectedIndex < 0) {
+            if (this.platos.selectedIndex < 0) {
+                event.preventDefault();
+                throw new Error('selecciona al menos una opción');
+            }
+
+            let platos = Array.from(this.platos.selectedOptions).map(option => option.value);
+            handler(platos);
+
+            event.stopPropagation();
             event.preventDefault();
-            alert(' selecciona al menos una opción.');
+        } catch (error) {
+            alert(error);
         }
-
-        let platos = Array.from(this.platos.selectedOptions).map(option => option.value);
-        handler(platos);
-
-        event.stopPropagation();
-        event.preventDefault();
-
     });
 
 }
 
 
 function manageMenuValidation(handler) {
-    const form = document.forms.Form;
+    let form = document.forms.fManMenu;
     form.setAttribute('novalidate', true);
     form.addEventListener('submit', function (event) {
         let menu = form.menus.value;
@@ -128,10 +130,8 @@ function manageMenuValidation(handler) {
         // si es asignar validar y pasar array de seleccionados #dispoDishes
         try {
             if (accion == 'asignarDishMenu') {
-
                 if (this.dispoDishes.selectedIndex < 0)
                     throw new Error('selecciona al menos una opción.');
-                console.log(this.dispoDishes.selectedIndex);
                 platos = Array.from(this.dispoDishes.selectedOptions).map(option => option.value);
             } else if (accion == "desasignarDishMenu") {
                 if (this.menusDishes.selectedIndex < 0)
@@ -145,10 +145,12 @@ function manageMenuValidation(handler) {
                 platos = Array.from(this.menusDishes.selectedOptions).map(option => option.value);
             }
         } catch (error) {
+            alert(error);
             error instanceof TypeError
                 ? console.error('Se ha producido un error:', error)
                 : alert(error);
         }
+
         handler(menu, platos, accion);
 
         event.stopPropagation();
@@ -157,6 +159,143 @@ function manageMenuValidation(handler) {
 
 }
 
+function manageCatValidation(handler) {
+    let form = document.forms.fManCateg;
+    form.setAttribute('novalidate', true);
+    form.addEventListener('submit', function (event) {
+
+        let accion = event.submitter.id
+        let isValid = true;
+        let firstInvalidElement = null;
+
+        try {
+            if (accion == "addCateg") {
+                this.nombre.value = this.nombre.value.trim();
+                if (!this.nombre.checkValidity()) {
+                    isValid = false;
+                    showFeedBack(this.nombre, false);
+                    firstInvalidElement = this.descripcion;
+                } else {
+                    showFeedBack(this.nombre, true);
+                }
+
+                if (!isValid) {
+                    firstInvalidElement.focus();
+                } else {
+                    handler(this.nombre.value, accion, this.descripcion.value);
+                }
+            } else if (accion == "remCateg") {
+                if (this.categoriasDispo.selectedIndex < 0)
+                    throw new Error('selecciona al menos una opción.');
+                let categorias = Array.from(this.categoriasDispo.selectedOptions).map(option => option.value);
+                handler(categorias, accion);
+            }
+        } catch (error) {
+            console.log(error);
+            error instanceof TypeError
+                ? console.error('Se ha producido un error:', error)
+                : alert(error);
+        }
 
 
-export { newDishValidation, removeDishValidation, manageMenuValidation };
+        event.stopPropagation();
+        event.preventDefault();
+    });
+
+
+
+}
+
+
+function addRestValidation(handler) {
+
+    let form = document.forms.fAddRest;
+    form.setAttribute('novalidate', true);
+    form.addEventListener('submit', function (event) {
+        let isValid = true;
+        let firstInvalidElement = null;
+        try {
+            this.nombre.value = this.nombre.value.trim();
+            if (!this.nombre.checkValidity()) {
+                isValid = false;
+                showFeedBack(this.nombre, false);
+                firstInvalidElement = this.descripcion;
+            } else {
+                showFeedBack(this.nombre, true);
+            }
+
+            this.latitud.value = this.latitud.value.trim();
+            if (!this.latitud.checkValidity()) {
+                isValid = false;
+                showFeedBack(this.latitud, false);
+                firstInvalidElement = this.descripcion;
+            } else {
+                showFeedBack(this.latitud, true);
+            }
+
+            this.longitud.value = this.longitud.value.trim();
+            if (!this.longitud.checkValidity()) {
+                isValid = false;
+                showFeedBack(this.longitud, false);
+                firstInvalidElement = this.descripcion;
+            } else {
+                showFeedBack(this.longitud, true);
+            }
+
+            if (!isValid) {
+                firstInvalidElement.focus();
+            } else {
+                handler(this.nombre.value, this.descripcion.value, this.latitud.value, this.longitud.value);
+            }
+
+        } catch (error) {
+            console.log(error);
+            error instanceof TypeError
+                ? console.error('Se ha producido un error:', error)
+                : alert(error);
+        }
+
+
+        event.stopPropagation();
+        event.preventDefault();
+    });
+
+
+
+}
+
+function modCategoryValidation(handler) {
+    let form = document.forms.fModCat;
+    form.setAttribute('novalidate', true);
+    form.addEventListener('submit', function (event) {
+        let plato = form.platos.value;
+        let categorias;
+        let accion = event.submitter.id
+        // si la accion es desasignar o intercambiar ,validar y  pasar al handler el array de platos seleccionados de #menuDishes
+        // si es asignar validar y pasar array de seleccionados #dispoDishes
+        try {
+            if (accion == 'desasignarDishCategory') {
+                if (this.dishCategories.selectedIndex < 0)
+                    throw new Error('selecciona al menos una opción.');
+                categorias = Array.from(this.dishCategories.selectedOptions).map(option => option.value);
+            } else if (accion == "asignarDishCategory") {
+                if (this.dispoCategories.selectedIndex < 0)
+                    throw new Error('selecciona al menos una opción.');
+
+                categorias = Array.from(this.dispoCategories.selectedOptions).map(option => option.value);
+            }
+        } catch (error) {
+            alert(error);
+            error instanceof TypeError
+                ? console.error('Se ha producido un error:', error)
+                : alert(error);
+        }
+
+        handler(plato, categorias, accion);
+
+        event.stopPropagation();
+        event.preventDefault();
+    });
+}
+
+export { newDishValidation, removeDishValidation, manageMenuValidation, manageCatValidation, addRestValidation, modCategoryValidation };

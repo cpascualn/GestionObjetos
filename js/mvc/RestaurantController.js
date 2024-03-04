@@ -170,7 +170,6 @@ class RestaurantController {
     handleShowDish = (dishName) => {
         // cuando muestras un plato, asignar enlace al boton nueva ventana
         this[VIEW].bindShowDishInNewWindow(this.handleShowDishInNewWindow);
-        console.log("mostrar plato " + dishName);
         this[VIEW].hideForm();
     }
 
@@ -190,9 +189,9 @@ class RestaurantController {
             { nombre: "addDish", show: () => this[VIEW].addDishForm(this[MODEL].categories, this[MODEL].allergens), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
             { nombre: "removeDish", show: () => this[VIEW].removeDishForm(this[MODEL].dishes), bind: () => this[VIEW].bindRemoveDishForm(this.handleRemoveDish) },
             { nombre: "manageMenu", show: () => this[VIEW].manageMenuForm(this[MODEL].menus, this[MODEL].dishes), bind: () => this[VIEW].bindManageMenuForm(this.handlemanageMenu) },
-            { nombre: "manageCat", show: () => this[VIEW].manageCatForm(this[MODEL].categories), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
-            { nombre: "addRest", show: () => this[VIEW].addRestForm(), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) },
-            { nombre: "modifyCat", show: () => this[VIEW].modifyCatForm(this[MODEL].dishes, this[MODEL].categories), bind: () => this[VIEW].bindNewDishForm(this.handleCreateDish) }
+            { nombre: "manageCat", show: () => this[VIEW].manageCatForm(this[MODEL].categories), bind: () => this[VIEW].bindmanageCatForm(this.handleManageCategories) },
+            { nombre: "addRest", show: () => this[VIEW].addRestForm(), bind: () => this[VIEW].bindAddRestForm(this.handleCreateRestaurant) },
+            { nombre: "modifyCat", show: () => this[VIEW].modifyCatForm(this[MODEL].dishes, this[MODEL].categories), bind: () => this[VIEW].bindCatForm(this.handleModifyCat) }
         ];
 
         let funcion = gestiones.find(ges => ges.nombre === gestion);
@@ -220,9 +219,8 @@ class RestaurantController {
 
             allergens.forEach((nombre) => {
                 // intenta crearla, como ya existe devuelve la que existe
-                console.log(nombre);
                 let allergen = this[MODEL].createAllergen(nombre);
-                console.log(allergen);
+
                 this[MODEL].assignAllergenToDish(allergen, dish);
             });
             done = true;
@@ -235,28 +233,32 @@ class RestaurantController {
     }
 
     handleRemoveDish = (names) => {
-        let done; let error; let dish;
+        let done; let error; let dish; let dishes = [];
 
         try {
             names.forEach(name => {
                 dish = this[MODEL].createDish(name);
                 this[MODEL].removeDish(dish);
+                dishes.push(dish);
                 done = true;
+
             });
         } catch (exception) {
             done = false;
             error = exception;
+            console.log(error);
         }
 
-        this[VIEW].showRemoveDishModal(done, dish, error);
-        this[VIEW].removeDishForm(this[MODEL].dishes)
+        this[VIEW].showRemoveDishModal(done, dishes, error);
+        // reiniciar el formulario
+        this.handleShowForm('removeDish');
     }
 
     handlemanageMenu = (menuName, platos, accion) => {
         let done; let error; let dishes = []; let menu;
         // dependiendo de la accion , borras, cambias o añades  // desasignarDishMenu  intercambiarDishMenu  asignarDishMenu
 
-
+        console.log(platos);
         try {
             // recoger objeto menu y dish
             platos.forEach(plato => {
@@ -286,10 +288,84 @@ class RestaurantController {
         } catch (exception) {
             done = false;
             error = exception;
+            alert(error);
+        }
+
+        // reiniciar form
+        this.handleShowForm('manageMenu');
+    }
+
+    handleManageCategories = (name, action, descrip) => { // si es eliminar name es un array de las categorias a eliminar , si no es el nombre de la que hay que añadir
+        let done; let error; let categ; let categories = [];
+
+        try {
+            if (action == "addCateg") {
+                categ = this[MODEL].createCategory(name, descrip);
+                done = true;
+                this[VIEW].showAddCategDishModal(done, categ, error);
+            } else if (action == "remCateg") {
+                name.forEach(nombre => {
+                    categ = this[MODEL].createCategory(nombre);
+                    categories.push(categ);
+                });
+                this[MODEL].removeCategory(...categories);
+                done = true;
+                this[VIEW].showRemoveCategDishModal(done, categories, error);
+            }
+        } catch (exception) {
+            done = false;
+            error = exception;
+            alert(error);
         }
 
 
-        this[VIEW].manageMenuForm(this[MODEL].menus, this[MODEL].dishes)
+        this.handleShowForm('manageCat');
+    }
+
+    handleCreateRestaurant = (name, descrip, lati, longi) => {
+        let done; let restaurant; let error;
+        try {
+            let location = new Coordinate(lati, longi);
+            restaurant = this[MODEL].createRestaurant(name, descrip, location);
+            done = true;
+        } catch (excepcion) {
+            done = false;
+            error = excepcion;
+        }
+
+        this[VIEW].showRestaurantModal(done, restaurant, error);
+        this[VIEW].loadRestaurants(this[MODEL].restaurants);
+        this[VIEW].bindRestaurant(this.handleRestaurants);
+    }
+
+    handleModifyCat = (plato, categorias, accion) => {
+        let done; let error; let dish; let categories = [];
+        try {
+            dish = this[MODEL].createDish(plato);
+            for (const categ of categorias) {
+                categories.push(this[MODEL].createCategory(categ));
+            }
+
+            if (accion == "asignarDishCategory") {
+
+                for (const categ of categories) {
+                    this[MODEL].assignCategoryToDish(categ, dish);
+                }
+                done = true;
+                this[VIEW].showAssignCatDishModal(done, categories, dish, error);
+            } else if (accion == "desasignarDishCategory") {
+                for (const categ of categories) {
+                    this[MODEL].deassignCategoryToDish(categ, dish);
+                }
+                done = true;
+                this[VIEW].showRemCatDishModal(done, categories, dish, error);
+            }
+
+        } catch (excepcion) {
+            done = false;
+            error = excepcion;
+        }
+        this.handleShowForm('modifyCat');
     }
 
     handleCloseWindows = () => {
